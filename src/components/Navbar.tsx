@@ -1,8 +1,19 @@
-import { Car } from "lucide-react";
+import { Car, User, LogOut, Plus } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
+  const { user, signOut } = useAuth();
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,12 +38,62 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <Button variant="ghost" className="hidden sm:inline-flex">
-              Giriş Yap
-            </Button>
-            <Button variant="default">
-              Üye Ol
-            </Button>
+            {user ? (
+              <>
+                <Link to="/my-cars" className="hidden sm:inline-flex">
+                  <Button variant="ghost">
+                    Araçlarım
+                  </Button>
+                </Link>
+                <Link to="/add-car">
+                  <Button variant="outline" className="hidden sm:inline-flex">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Araç Ekle
+                  </Button>
+                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="default" size="icon">
+                      <User className="w-5 h-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>Hesabım</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <Link to="/my-cars">
+                      <DropdownMenuItem>
+                        <Car className="w-4 h-4 mr-2" />
+                        Araçlarım
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link to="/add-car">
+                      <DropdownMenuItem>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Araç Ekle
+                      </DropdownMenuItem>
+                    </Link>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={signOut}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Çıkış Yap
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              <>
+                <Link to="/auth">
+                  <Button variant="ghost" className="hidden sm:inline-flex">
+                    Giriş Yap
+                  </Button>
+                </Link>
+                <Link to="/auth">
+                  <Button variant="default">
+                    Üye Ol
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -1,15 +1,72 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CarCard from "@/components/CarCard";
-import { cars } from "@/data/cars";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, SlidersHorizontal } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { Car as CarType } from "@/types/car";
+import carCompact from "@/assets/car-compact.jpg";
+import carSedan from "@/assets/car-sedan.jpg";
+import carSuv from "@/assets/car-suv.jpg";
 
 const Cars = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [cars, setCars] = useState<CarType[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchCars();
+  }, []);
+
+  const fetchCars = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("cars")
+        .select("*")
+        .eq("available", true)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Araçlar yüklenirken hata:", error);
+        toast.error("Araçlar yüklenemedi");
+        return;
+      }
+
+      // Convert database format to component format
+      const convertedCars: CarType[] = (data || []).map((car) => {
+        // Select image based on car type
+        let image = carCompact;
+        if (car.type === "sedan") image = carSedan;
+        if (car.type === "suv") image = carSuv;
+
+        return {
+          id: car.id,
+          name: car.name,
+          type: car.type as "compact" | "sedan" | "suv",
+          pricePerMinute: Number(car.price_per_minute),
+          pricePerHour: Number(car.price_per_hour),
+          pricePerDay: Number(car.price_per_day),
+          image: car.image_url || image,
+          fuelType: car.fuel_type as "Benzin" | "Dizel" | "Elektrik" | "Hibrit",
+          transmission: car.transmission as "Manuel" | "Otomatik",
+          seats: car.seats,
+          available: car.available,
+          location: car.location,
+        };
+      });
+
+      setCars(convertedCars);
+    } catch (error) {
+      console.error("Araçlar yüklenirken hata:", error);
+      toast.error("Bir hata oluştu");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredCars = cars.filter((car) => {
     const matchesSearch = car.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -82,18 +139,28 @@ const Cars = () => {
             </div>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCars.map((car) => (
-              <CarCard key={car.id} car={car} />
-            ))}
-          </div>
-
-          {filteredCars.length === 0 && (
+          {loading ? (
             <div className="text-center py-12">
-              <p className="text-xl text-muted-foreground">
-                Aramanıza uygun araç bulunamadı
-              </p>
+              <p className="text-xl text-muted-foreground">Yükleniyor...</p>
             </div>
+          ) : (
+            <>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredCars.map((car) => (
+                  <CarCard key={car.id} car={car} />
+                ))}
+              </div>
+
+              {filteredCars.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-xl text-muted-foreground">
+                    {cars.length === 0 
+                      ? "Henüz eklenmiş araç bulunmuyor" 
+                      : "Aramanıza uygun araç bulunamadı"}
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </main>

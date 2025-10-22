@@ -14,7 +14,105 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      cars: {
+        Row: {
+          available: boolean | null
+          city: string | null
+          created_at: string | null
+          description: string | null
+          fuel_type: Database["public"]["Enums"]["fuel_type"]
+          id: string
+          image_url: string | null
+          latitude: number | null
+          location: string
+          longitude: number | null
+          name: string
+          owner_id: string
+          plate_number: string | null
+          price_per_day: number
+          price_per_hour: number
+          price_per_minute: number
+          seats: number
+          transmission: Database["public"]["Enums"]["transmission_type"]
+          type: Database["public"]["Enums"]["car_type"]
+          updated_at: string | null
+          year: number | null
+        }
+        Insert: {
+          available?: boolean | null
+          city?: string | null
+          created_at?: string | null
+          description?: string | null
+          fuel_type: Database["public"]["Enums"]["fuel_type"]
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          location: string
+          longitude?: number | null
+          name: string
+          owner_id: string
+          plate_number?: string | null
+          price_per_day: number
+          price_per_hour: number
+          price_per_minute: number
+          seats: number
+          transmission: Database["public"]["Enums"]["transmission_type"]
+          type: Database["public"]["Enums"]["car_type"]
+          updated_at?: string | null
+          year?: number | null
+        }
+        Update: {
+          available?: boolean | null
+          city?: string | null
+          created_at?: string | null
+          description?: string | null
+          fuel_type?: Database["public"]["Enums"]["fuel_type"]
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          location?: string
+          longitude?: number | null
+          name?: string
+          owner_id?: string
+          plate_number?: string | null
+          price_per_day?: number
+          price_per_hour?: number
+          price_per_minute?: number
+          seats?: number
+          transmission?: Database["public"]["Enums"]["transmission_type"]
+          type?: Database["public"]["Enums"]["car_type"]
+          updated_at?: string | null
+          year?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +121,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      car_type: "compact" | "sedan" | "suv"
+      fuel_type: "Benzin" | "Dizel" | "Elektrik" | "Hibrit"
+      transmission_type: "Manuel" | "Otomatik"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +250,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      car_type: ["compact", "sedan", "suv"],
+      fuel_type: ["Benzin", "Dizel", "Elektrik", "Hibrit"],
+      transmission_type: ["Manuel", "Otomatik"],
+    },
   },
 } as const

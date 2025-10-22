@@ -1,17 +1,84 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { cars } from "@/data/cars";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Users, Fuel, Settings, Shield, Clock, ArrowLeft, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import carCompact from "@/assets/car-compact.jpg";
+import carSedan from "@/assets/car-sedan.jpg";
+import carSuv from "@/assets/car-suv.jpg";
+
+interface Car {
+  id: string;
+  name: string;
+  type: string;
+  price_per_minute: number;
+  price_per_hour: number;
+  price_per_day: number;
+  image_url: string | null;
+  fuel_type: string;
+  transmission: string;
+  seats: number;
+  available: boolean;
+  location: string;
+  plate_number: string | null;
+  year: number | null;
+  description: string | null;
+}
 
 const CarDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const car = cars.find((c) => c.id === id);
+  const { user } = useAuth();
+  const [car, setCar] = useState<Car | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchCar();
+  }, [id]);
+
+  const fetchCar = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("cars")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Araç yüklenirken hata:", error);
+        toast({
+          title: "Hata",
+          description: "Araç yüklenemedi",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setCar(data);
+    } catch (error) {
+      console.error("Araç yüklenirken hata:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container mx-auto px-4 pt-24 pb-12 text-center">
+          <p className="text-xl text-muted-foreground">Yükleniyor...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!car) {
     return (
@@ -32,6 +99,15 @@ const CarDetail = () => {
   }
 
   const handleReserve = () => {
+    if (!user) {
+      toast({
+        title: "Giriş Gerekli",
+        description: "Araç kiralamak için giriş yapmalısınız",
+      });
+      navigate("/auth");
+      return;
+    }
+
     toast({
       title: "Rezervasyon Başarılı!",
       description: `${car.name} için rezervasyonunuz oluşturuldu. Aracı kilitlemek için QR kodu kullanın.`,
@@ -40,6 +116,12 @@ const CarDetail = () => {
       navigate("/cars");
     }, 2000);
   };
+
+  // Get appropriate image based on car type
+  let carImage = carCompact;
+  if (car.type === "sedan") carImage = carSedan;
+  if (car.type === "suv") carImage = carSuv;
+  const displayImage = car.image_url || carImage;
 
   return (
     <div className="min-h-screen bg-background">
@@ -56,7 +138,7 @@ const CarDetail = () => {
             <div>
               <div className="relative rounded-2xl overflow-hidden mb-6">
                 <img 
-                  src={car.image} 
+                  src={displayImage} 
                   alt={car.name}
                   className="w-full h-96 object-cover"
                 />
@@ -89,7 +171,7 @@ const CarDetail = () => {
                     </div>
                     <div>
                       <div className="text-sm text-muted-foreground">Yakıt</div>
-                      <div className="font-semibold text-foreground">{car.fuelType}</div>
+                      <div className="font-semibold text-foreground">{car.fuel_type}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -111,6 +193,13 @@ const CarDetail = () => {
                     </div>
                   </div>
                 </div>
+
+                {car.description && (
+                  <div className="mt-6 pt-6 border-t border-border">
+                    <h4 className="font-semibold text-foreground mb-2">Açıklama</h4>
+                    <p className="text-muted-foreground">{car.description}</p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -121,8 +210,17 @@ const CarDetail = () => {
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <MapPin className="w-5 h-5" />
                     <span className="text-lg">{car.location}</span>
-                    {car.distance && <span>• {car.distance} km uzakta</span>}
                   </div>
+                  {car.plate_number && (
+                    <div className="text-sm text-muted-foreground mt-2">
+                      Plaka: <span className="font-semibold">{car.plate_number}</span>
+                    </div>
+                  )}
+                  {car.year && (
+                    <div className="text-sm text-muted-foreground mt-1">
+                      Model Yılı: <span className="font-semibold">{car.year}</span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-1 mt-2">
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} className="w-5 h-5 fill-accent text-accent" />
@@ -140,7 +238,7 @@ const CarDetail = () => {
                         <span className="text-muted-foreground">Dakikalık</span>
                       </div>
                       <div className="text-right">
-                        <div className="text-2xl font-bold text-foreground">{car.pricePerMinute}₺</div>
+                        <div className="text-2xl font-bold text-foreground">{car.price_per_minute}₺</div>
                         <div className="text-sm text-muted-foreground">dakika başı</div>
                       </div>
                     </div>
@@ -150,7 +248,7 @@ const CarDetail = () => {
                         <span className="text-muted-foreground">Saatlik</span>
                       </div>
                       <div className="text-right">
-                        <div className="text-xl font-semibold text-foreground">{car.pricePerHour}₺</div>
+                        <div className="text-xl font-semibold text-foreground">{car.price_per_hour}₺</div>
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
@@ -159,7 +257,7 @@ const CarDetail = () => {
                         <span className="text-muted-foreground">Günlük</span>
                       </div>
                       <div className="text-right">
-                        <div className="text-xl font-semibold text-foreground">{car.pricePerDay}₺</div>
+                        <div className="text-xl font-semibold text-foreground">{car.price_per_day}₺</div>
                       </div>
                     </div>
                   </div>
