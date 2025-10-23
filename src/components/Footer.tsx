@@ -21,27 +21,25 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-foreground mb-4">Şirket</h3>
             <ul className="space-y-2">
-              <li><Link to="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Hakkımızda</Link></li>
-              <li><Link to="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Kariyer</Link></li>
-              <li><Link to="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Blog</Link></li>
+              <li><Link to="/about" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Hakkımızda</Link></li>
+              <li><Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors text-sm">İletişim</Link></li>
             </ul>
           </div>
 
           <div>
             <h3 className="font-semibold text-foreground mb-4">Destek</h3>
             <ul className="space-y-2">
-              <li><Link to="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Yardım Merkezi</Link></li>
-              <li><Link to="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">İletişim</Link></li>
-              <li><Link to="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">SSS</Link></li>
+              <li><Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors text-sm">SSS</Link></li>
+              <li><Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors text-sm">İletişim</Link></li>
             </ul>
           </div>
 
           <div>
             <h3 className="font-semibold text-foreground mb-4">Yasal</h3>
             <ul className="space-y-2">
-              <li><Link to="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Gizlilik</Link></li>
-              <li><Link to="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Şartlar</Link></li>
-              <li><Link to="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">KVKK</Link></li>
+              <li><Link to="/privacy" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Gizlilik Politikası</Link></li>
+              <li><Link to="/terms" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Kullanım Koşulları</Link></li>
+              <li><Link to="/kvkk" className="text-muted-foreground hover:text-foreground transition-colors text-sm">KVKK</Link></li>
             </ul>
           </div>
         </div>
