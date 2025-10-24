@@ -28,6 +28,8 @@ interface Car {
   price_per_minute: number;
   price_per_hour: number;
   price_per_day: number;
+  price_per_km: number;
+  km_packages: Record<string, number>;
   fuel_type: string;
   transmission: string;
   seats: number;
@@ -67,7 +69,7 @@ const MyCars = () => {
         return;
       }
 
-      setCars(data || []);
+      setCars((data || []) as Car[]);
     } catch (error) {
       console.error("Araçlar yüklenirken hata:", error);
       toast.error("Bir hata oluştu");
@@ -204,13 +206,21 @@ const MyCars = () => {
                     )}
 
                     <div className="border-t border-border pt-4 mb-4">
-                      <div className="text-2xl font-bold text-foreground">
+                      <div className="text-2xl font-bold text-foreground mb-2">
                         {car.price_per_minute}₺
                         <span className="text-sm font-normal text-muted-foreground ml-1">/dk</span>
                       </div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-sm text-muted-foreground mb-2">
                         {car.price_per_hour}₺/saat • {car.price_per_day}₺/gün
                       </div>
+                      <div className="text-sm text-muted-foreground">
+                        KM Başı: <span className="font-semibold">{car.price_per_km}₺</span>
+                      </div>
+                      {car.km_packages && Object.keys(car.km_packages).length > 0 && (
+                        <div className="mt-2 text-xs text-muted-foreground">
+                          KM Paketleri: {Object.entries(car.km_packages).map(([km, price]) => `${km}km=${price}₺`).join(", ")}
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex gap-2">

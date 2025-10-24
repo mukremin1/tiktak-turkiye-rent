@@ -39,6 +39,8 @@ const CarDetail = () => {
   const { user } = useAuth();
   const [car, setCar] = useState<Car | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedPricing, setSelectedPricing] = useState<"minute" | "hour" | "day" | null>(null);
+  const [selectedKmPackage, setSelectedKmPackage] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCar();
@@ -110,9 +112,22 @@ const CarDetail = () => {
       return;
     }
 
+    if (!selectedPricing) {
+      toast({
+        title: "Fiyat Seçimi Gerekli",
+        description: "Lütfen bir fiyatlandırma seçeneği seçin",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const pricingText = selectedPricing === "minute" ? "Dakikalık" : 
+                       selectedPricing === "hour" ? "Saatlik" : "Günlük";
+    const kmText = selectedKmPackage ? ` + ${selectedKmPackage} KM paketi` : "";
+
     toast({
       title: "Rezervasyon Başarılı!",
-      description: `${car.name} için rezervasyonunuz oluşturuldu. Aracı kilitlemek için QR kodu kullanın.`,
+      description: `${car.name} için ${pricingText} kiralama${kmText} ile rezervasyonunuz oluşturuldu.`,
     });
     setTimeout(() => {
       navigate("/cars");
@@ -232,57 +247,69 @@ const CarDetail = () => {
                 </div>
 
                 <div className="border-t border-border pt-6 mb-6">
-                  <h3 className="font-semibold text-foreground mb-4 text-lg">Fiyatlandırma</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-foreground mb-4 text-lg">Fiyatlandırma Seçin</h3>
+                  <div className="space-y-3">
+                    <Button
+                      variant={selectedPricing === "minute" ? "default" : "outline"}
+                      className="w-full h-auto py-4 flex items-center justify-between"
+                      onClick={() => setSelectedPricing("minute")}
+                    >
                       <div className="flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-muted-foreground" />
-                        <span className="text-muted-foreground">Dakikalık</span>
+                        <Clock className="w-5 h-5" />
+                        <span>Dakikalık</span>
                       </div>
                       <div className="text-right">
-                        <div className="text-2xl font-bold text-foreground">{car.price_per_minute}₺</div>
-                        <div className="text-sm text-muted-foreground">dakika başı</div>
+                        <div className="text-2xl font-bold">{car.price_per_minute}₺</div>
+                        <div className="text-xs opacity-70">dakika başı</div>
                       </div>
-                    </div>
-                    <div className="flex items-center justify-between">
+                    </Button>
+
+                    <Button
+                      variant={selectedPricing === "hour" ? "default" : "outline"}
+                      className="w-full h-auto py-4 flex items-center justify-between"
+                      onClick={() => setSelectedPricing("hour")}
+                    >
                       <div className="flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-muted-foreground" />
-                        <span className="text-muted-foreground">Saatlik</span>
+                        <Clock className="w-5 h-5" />
+                        <span>Saatlik</span>
                       </div>
-                      <div className="text-right">
-                        <div className="text-xl font-semibold text-foreground">{car.price_per_hour}₺</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
+                      <div className="text-xl font-semibold">{car.price_per_hour}₺</div>
+                    </Button>
+
+                    <Button
+                      variant={selectedPricing === "day" ? "default" : "outline"}
+                      className="w-full h-auto py-4 flex items-center justify-between"
+                      onClick={() => setSelectedPricing("day")}
+                    >
                       <div className="flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-muted-foreground" />
-                        <span className="text-muted-foreground">Günlük</span>
+                        <Clock className="w-5 h-5" />
+                        <span>Günlük</span>
                       </div>
-                      <div className="text-right">
-                        <div className="text-xl font-semibold text-foreground">{car.price_per_day}₺</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between pt-4 border-t border-border">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-5 h-5 text-muted-foreground" />
-                        <span className="text-muted-foreground">KM Başı</span>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-xl font-semibold text-foreground">{car.price_per_km}₺</div>
-                        <div className="text-sm text-muted-foreground">km başına</div>
-                      </div>
+                      <div className="text-xl font-semibold">{car.price_per_day}₺</div>
+                    </Button>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-muted-foreground">KM Başı Ücret</span>
+                      <span className="font-semibold">{car.price_per_km}₺/km</span>
                     </div>
                   </div>
 
                   {car.km_packages && Object.keys(car.km_packages).length > 0 && (
                     <div className="mt-6 pt-6 border-t border-border">
-                      <h4 className="font-semibold text-foreground mb-3">KM Paketleri</h4>
+                      <h4 className="font-semibold text-foreground mb-3">KM Paketleri (Opsiyonel)</h4>
                       <div className="grid grid-cols-2 gap-3">
                         {Object.entries(car.km_packages).map(([km, price]) => (
-                          <div key={km} className="bg-muted/30 rounded-lg p-3 flex justify-between items-center">
-                            <span className="text-muted-foreground">{km} KM</span>
-                            <span className="font-semibold text-foreground">{price}₺</span>
-                          </div>
+                          <Button
+                            key={km}
+                            variant={selectedKmPackage === km ? "default" : "outline"}
+                            className="h-auto py-3 flex flex-col items-center gap-1"
+                            onClick={() => setSelectedKmPackage(selectedKmPackage === km ? null : km)}
+                          >
+                            <span className="font-semibold">{km} KM</span>
+                            <span className="text-lg font-bold">{price}₺</span>
+                          </Button>
                         ))}
                       </div>
                     </div>

@@ -45,6 +45,11 @@ const Hero = () => {
                 Araçları İncele
               </Button>
             </a>
+            <a href="/my-cars">
+              <Button size="lg" variant="secondary" className="text-lg h-14 px-8">
+                Araç Sahibi Ol
+              </Button>
+            </a>
           </div>
 
           <div className="grid grid-cols-2 gap-6">
