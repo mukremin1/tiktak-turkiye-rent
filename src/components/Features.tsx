@@ -1,4 +1,4 @@
-import { Shield, Zap, CreditCard, Clock, MapPin, Smartphone } from "lucide-react";
+import { Shield, Zap, CreditCard, Clock, Fuel, Smartphone } from "lucide-react";
 
 const features = [
   {
@@ -8,13 +8,13 @@ const features = [
   },
   {
     icon: CreditCard,
-    title: "Esnek Ödeme",
-    description: "Sadece kullandığın kadar öde",
+    title: "KM Paketleri",
+    description: "Dakikalık, saatlik, günlük ve km paketleri",
   },
   {
-    icon: MapPin,
-    title: "Geniş Ağ",
-    description: "50+ lokasyonda binlerce araç",
+    icon: Fuel,
+    title: "Yakıt Bizden",
+    description: "Yakıt masrafları tarafımızdan karşılanır",
   },
   {
     icon: Shield,
@@ -42,7 +42,7 @@ const Features = () => {
             <span className="text-sm font-semibold text-accent">Özellikler</span>
           </div>
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
-            Neden RentNow?
+            Neden RideYo?
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Modern araç kiralama deneyimi için ihtiyacın olan her şey

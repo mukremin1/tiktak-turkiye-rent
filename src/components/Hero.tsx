@@ -31,7 +31,7 @@ const Hero = () => {
           </h1>
           
           <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-            İstediğin yerde araç bul, kilitle ve git. Dakikalık kiralama ile sadece kullandığın kadar öde.
+            İstediğin yerde araç bul, kilitle ve git. Dakikalık, saatlik veya günlük kiralama ile km paketleri. Yakıt bizden!
           </p>
           
           <div className="flex flex-wrap gap-4 mb-12">
@@ -47,7 +47,7 @@ const Hero = () => {
             </a>
           </div>
 
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 gap-6">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                 <Clock className="w-6 h-6 text-primary" />
@@ -55,16 +55,6 @@ const Hero = () => {
               <div>
                 <div className="text-2xl font-bold text-foreground">24/7</div>
                 <div className="text-sm text-muted-foreground">Hizmet</div>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
-                <MapPin className="w-6 h-6 text-accent" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-foreground">50+</div>
-                <div className="text-sm text-muted-foreground">Lokasyon</div>
               </div>
             </div>
             

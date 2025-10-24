@@ -70,6 +70,7 @@ export type Database = {
           fuel_type: Database["public"]["Enums"]["fuel_type"]
           id: string
           image_url: string | null
+          km_packages: Json | null
           latitude: number | null
           location: string
           longitude: number | null
@@ -78,6 +79,7 @@ export type Database = {
           plate_number: string | null
           price_per_day: number
           price_per_hour: number
+          price_per_km: number | null
           price_per_minute: number
           seats: number
           transmission: Database["public"]["Enums"]["transmission_type"]
@@ -93,6 +95,7 @@ export type Database = {
           fuel_type: Database["public"]["Enums"]["fuel_type"]
           id?: string
           image_url?: string | null
+          km_packages?: Json | null
           latitude?: number | null
           location: string
           longitude?: number | null
@@ -101,6 +104,7 @@ export type Database = {
           plate_number?: string | null
           price_per_day: number
           price_per_hour: number
+          price_per_km?: number | null
           price_per_minute: number
           seats: number
           transmission: Database["public"]["Enums"]["transmission_type"]
@@ -116,6 +120,7 @@ export type Database = {
           fuel_type?: Database["public"]["Enums"]["fuel_type"]
           id?: string
           image_url?: string | null
+          km_packages?: Json | null
           latitude?: number | null
           location?: string
           longitude?: number | null
@@ -124,6 +129,7 @@ export type Database = {
           plate_number?: string | null
           price_per_day?: number
           price_per_hour?: number
+          price_per_km?: number | null
           price_per_minute?: number
           seats?: number
           transmission?: Database["public"]["Enums"]["transmission_type"]

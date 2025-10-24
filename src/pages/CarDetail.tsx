@@ -19,6 +19,8 @@ interface Car {
   price_per_minute: number;
   price_per_hour: number;
   price_per_day: number;
+  price_per_km: number;
+  km_packages: Record<string, number>;
   image_url: string | null;
   fuel_type: string;
   transmission: string;
@@ -60,7 +62,7 @@ const CarDetail = () => {
         return;
       }
 
-      setCar(data);
+      setCar(data as Car);
     } catch (error) {
       console.error("Araç yüklenirken hata:", error);
     } finally {
@@ -260,7 +262,31 @@ const CarDetail = () => {
                         <div className="text-xl font-semibold text-foreground">{car.price_per_day}₺</div>
                       </div>
                     </div>
+                    <div className="flex items-center justify-between pt-4 border-t border-border">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-5 h-5 text-muted-foreground" />
+                        <span className="text-muted-foreground">KM Başı</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xl font-semibold text-foreground">{car.price_per_km}₺</div>
+                        <div className="text-sm text-muted-foreground">km başına</div>
+                      </div>
+                    </div>
                   </div>
+
+                  {car.km_packages && Object.keys(car.km_packages).length > 0 && (
+                    <div className="mt-6 pt-6 border-t border-border">
+                      <h4 className="font-semibold text-foreground mb-3">KM Paketleri</h4>
+                      <div className="grid grid-cols-2 gap-3">
+                        {Object.entries(car.km_packages).map(([km, price]) => (
+                          <div key={km} className="bg-muted/30 rounded-lg p-3 flex justify-between items-center">
+                            <span className="text-muted-foreground">{km} KM</span>
+                            <span className="font-semibold text-foreground">{price}₺</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-6">
@@ -270,6 +296,7 @@ const CarDetail = () => {
                   </div>
                   <ul className="text-sm text-muted-foreground space-y-1">
                     <li>• Tam kasko sigorta dahil</li>
+                    <li>• Yakıt bizden (ücretsiz)</li>
                     <li>• 7/24 yol yardım hizmeti</li>
                     <li>• Ücretsiz iptal (15 dk önce)</li>
                   </ul>

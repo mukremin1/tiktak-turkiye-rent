@@ -50,6 +50,8 @@ const Cars = () => {
           pricePerMinute: Number(car.price_per_minute),
           pricePerHour: Number(car.price_per_hour),
           pricePerDay: Number(car.price_per_day),
+          pricePerKm: Number(car.price_per_km || 0),
+          kmPackages: (car.km_packages as Record<string, number>) || {},
           image: car.image_url || image,
           fuelType: car.fuel_type as "Benzin" | "Dizel" | "Elektrik" | "Hibrit",
           transmission: car.transmission as "Manuel" | "Otomatik",

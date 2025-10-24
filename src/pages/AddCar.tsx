@@ -21,6 +21,8 @@ const carSchema = z.object({
   pricePerMinute: z.number().min(0.1, "Fiyat 0'dan büyük olmalıdır"),
   pricePerHour: z.number().min(1, "Fiyat 0'dan büyük olmalıdır"),
   pricePerDay: z.number().min(10, "Fiyat 10'dan büyük olmalıdır"),
+  pricePerKm: z.number().min(0, "KM başı fiyat 0'dan büyük veya eşit olmalıdır"),
+  kmPackages: z.record(z.string(), z.number()).optional(),
   fuelType: z.enum(["Benzin", "Dizel", "Elektrik", "Hibrit"]),
   transmission: z.enum(["Manuel", "Otomatik"]),
   seats: z.number().min(2).max(9),
@@ -41,6 +43,11 @@ const AddCar = () => {
     pricePerMinute: "",
     pricePerHour: "",
     pricePerDay: "",
+    pricePerKm: "",
+    km50: "",
+    km100: "",
+    km200: "",
+    km500: "",
     fuelType: "Benzin",
     transmission: "Otomatik",
     seats: "5",
@@ -59,12 +66,20 @@ const AddCar = () => {
     e.preventDefault();
 
     try {
+      const kmPackages: Record<string, number> = {};
+      if (formData.km50) kmPackages["50"] = parseFloat(formData.km50);
+      if (formData.km100) kmPackages["100"] = parseFloat(formData.km100);
+      if (formData.km200) kmPackages["200"] = parseFloat(formData.km200);
+      if (formData.km500) kmPackages["500"] = parseFloat(formData.km500);
+
       const validatedData = carSchema.parse({
         name: formData.name,
         type: formData.type,
         pricePerMinute: parseFloat(formData.pricePerMinute),
         pricePerHour: parseFloat(formData.pricePerHour),
         pricePerDay: parseFloat(formData.pricePerDay),
+        pricePerKm: parseFloat(formData.pricePerKm || "0"),
+        kmPackages: Object.keys(kmPackages).length > 0 ? kmPackages : undefined,
         fuelType: formData.fuelType,
         transmission: formData.transmission,
         seats: parseInt(formData.seats),
@@ -83,6 +98,8 @@ const AddCar = () => {
         price_per_minute: validatedData.pricePerMinute,
         price_per_hour: validatedData.pricePerHour,
         price_per_day: validatedData.pricePerDay,
+        price_per_km: validatedData.pricePerKm,
+        km_packages: validatedData.kmPackages || {},
         fuel_type: validatedData.fuelType,
         transmission: validatedData.transmission,
         seats: validatedData.seats,
@@ -237,6 +254,76 @@ const AddCar = () => {
                     required
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="pricePerKm">KM Başı Fiyat (₺) *</Label>
+                <Input
+                  id="pricePerKm"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  value={formData.pricePerKm}
+                  onChange={(e) => setFormData({ ...formData, pricePerKm: e.target.value })}
+                  placeholder="örn: 2.5"
+                  required
+                />
+                <p className="text-sm text-muted-foreground">Araç kiralama süresi dışında yapılan her km için ücret</p>
+              </div>
+
+              <div className="space-y-4">
+                <Label>KM Paketleri (Opsiyonel)</Label>
+                <div className="grid sm:grid-cols-4 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="km50">50 KM Paketi (₺)</Label>
+                    <Input
+                      id="km50"
+                      type="number"
+                      step="1"
+                      min="0"
+                      value={formData.km50}
+                      onChange={(e) => setFormData({ ...formData, km50: e.target.value })}
+                      placeholder="örn: 50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="km100">100 KM Paketi (₺)</Label>
+                    <Input
+                      id="km100"
+                      type="number"
+                      step="1"
+                      min="0"
+                      value={formData.km100}
+                      onChange={(e) => setFormData({ ...formData, km100: e.target.value })}
+                      placeholder="örn: 90"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="km200">200 KM Paketi (₺)</Label>
+                    <Input
+                      id="km200"
+                      type="number"
+                      step="1"
+                      min="0"
+                      value={formData.km200}
+                      onChange={(e) => setFormData({ ...formData, km200: e.target.value })}
+                      placeholder="örn: 160"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="km500">500 KM Paketi (₺)</Label>
+                    <Input
+                      id="km500"
+                      type="number"
+                      step="1"
+                      min="0"
+                      value={formData.km500}
+                      onChange={(e) => setFormData({ ...formData, km500: e.target.value })}
+                      placeholder="örn: 350"
+                    />
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground">TikTak gibi km paketleri ile kullanıcılara paket seçeneği sunun</p>
               </div>
 
               <div className="space-y-2">
