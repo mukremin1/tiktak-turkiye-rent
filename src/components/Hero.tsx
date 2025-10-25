@@ -47,7 +47,7 @@ const Hero = () => {
             </a>
             <a href="/my-cars">
               <Button size="lg" variant="secondary" className="text-lg h-14 px-8">
-                Araç Sahibi Ol
+                Kendi Aracınızı Yükleyin, Kazanmaya Başlayın
               </Button>
             </a>
           </div>

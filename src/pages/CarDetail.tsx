@@ -8,6 +8,7 @@ import { MapPin, Users, Fuel, Settings, Shield, Clock, ArrowLeft, Star } from "l
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import InsurancePackages from "@/components/InsurancePackages";
 import carCompact from "@/assets/car-compact.jpg";
 import carSedan from "@/assets/car-sedan.jpg";
 import carSuv from "@/assets/car-suv.jpg";
@@ -41,6 +42,13 @@ const CarDetail = () => {
   const [loading, setLoading] = useState(true);
   const [selectedPricing, setSelectedPricing] = useState<"minute" | "hour" | "day" | null>(null);
   const [selectedKmPackage, setSelectedKmPackage] = useState<string | null>(null);
+  const [selectedInsurance, setSelectedInsurance] = useState<string | null>(null);
+  const [insurancePrice, setInsurancePrice] = useState(0);
+
+  const handleInsuranceSelect = (packageId: string, price: number) => {
+    setSelectedInsurance(packageId);
+    setInsurancePrice(price);
+  };
 
   useEffect(() => {
     fetchCar();
@@ -316,7 +324,12 @@ const CarDetail = () => {
                   )}
                 </div>
 
-                <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-6">
+                <InsurancePackages 
+                  onSelect={handleInsuranceSelect}
+                  selectedPackage={selectedInsurance}
+                />
+
+                <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-6 mt-6">
                   <div className="flex items-center gap-2 text-primary mb-2">
                     <Shield className="w-5 h-5" />
                     <span className="font-semibold">Güvenli Kiralama</span>
