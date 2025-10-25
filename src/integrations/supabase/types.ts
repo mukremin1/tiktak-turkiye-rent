@@ -18,6 +18,8 @@ export type Database = {
         Row: {
           car_id: string
           created_at: string | null
+          driver_history_checked: boolean | null
+          driver_risk_level: string | null
           end_time: string
           id: string
           payment_status: string | null
@@ -30,6 +32,8 @@ export type Database = {
         Insert: {
           car_id: string
           created_at?: string | null
+          driver_history_checked?: boolean | null
+          driver_risk_level?: string | null
           end_time: string
           id?: string
           payment_status?: string | null
@@ -42,6 +46,8 @@ export type Database = {
         Update: {
           car_id?: string
           created_at?: string | null
+          driver_history_checked?: boolean | null
+          driver_risk_level?: string | null
           end_time?: string
           id?: string
           payment_status?: string | null
@@ -136,6 +142,48 @@ export type Database = {
           type?: Database["public"]["Enums"]["car_type"]
           updated_at?: string | null
           year?: number | null
+        }
+        Relationships: []
+      }
+      driver_history: {
+        Row: {
+          created_at: string
+          id: string
+          last_violation_date: string | null
+          license_number: string
+          notes: string | null
+          penalty_points: number
+          total_accidents: number
+          traffic_violations: number
+          updated_at: string
+          user_id: string
+          verification_status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_violation_date?: string | null
+          license_number: string
+          notes?: string | null
+          penalty_points?: number
+          total_accidents?: number
+          traffic_violations?: number
+          updated_at?: string
+          user_id: string
+          verification_status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_violation_date?: string | null
+          license_number?: string
+          notes?: string | null
+          penalty_points?: number
+          total_accidents?: number
+          traffic_violations?: number
+          updated_at?: string
+          user_id?: string
+          verification_status?: string
         }
         Relationships: []
       }
