@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import InsurancePackages from "@/components/InsurancePackages";
+import DriverHistoryForm from "@/components/DriverHistoryForm";
 import carCompact from "@/assets/car-compact.jpg";
 import carSedan from "@/assets/car-sedan.jpg";
 import carSuv from "@/assets/car-suv.jpg";
@@ -44,10 +45,17 @@ const CarDetail = () => {
   const [selectedKmPackage, setSelectedKmPackage] = useState<string | null>(null);
   const [selectedInsurance, setSelectedInsurance] = useState<string | null>(null);
   const [insurancePrice, setInsurancePrice] = useState(0);
+  const [driverVerified, setDriverVerified] = useState(false);
+  const [driverRiskLevel, setDriverRiskLevel] = useState<string>("");
 
   const handleInsuranceSelect = (packageId: string, price: number) => {
     setSelectedInsurance(packageId);
     setInsurancePrice(price);
+  };
+
+  const handleDriverVerification = (isApproved: boolean, riskLevel: string) => {
+    setDriverVerified(isApproved);
+    setDriverRiskLevel(riskLevel);
   };
 
   useEffect(() => {
@@ -117,6 +125,15 @@ const CarDetail = () => {
         description: "Araç kiralamak için giriş yapmalısınız",
       });
       navigate("/auth");
+      return;
+    }
+
+    if (!driverVerified) {
+      toast({
+        title: "Sürücü Doğrulaması Gerekli",
+        description: "Kiralama yapabilmek için önce sürücü bilgilerinizi doğrulamanız gerekiyor",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -329,6 +346,15 @@ const CarDetail = () => {
                   selectedPackage={selectedInsurance}
                 />
 
+                {user && (
+                  <div className="mt-6">
+                    <DriverHistoryForm 
+                      userId={user.id}
+                      onVerified={handleDriverVerification}
+                    />
+                  </div>
+                )}
+
                 <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-6 mt-6">
                   <div className="flex items-center gap-2 text-primary mb-2">
                     <Shield className="w-5 h-5" />
@@ -345,10 +371,14 @@ const CarDetail = () => {
                 <Button 
                   size="lg"
                   className="w-full text-lg h-14"
-                  disabled={!car.available}
+                  disabled={!car.available || !driverVerified}
                   onClick={handleReserve}
                 >
-                  {car.available ? "Hemen Kirala" : "Müsait Değil"}
+                  {!car.available 
+                    ? "Müsait Değil" 
+                    : !driverVerified 
+                    ? "Önce Sürücü Doğrulaması Yapın" 
+                    : "Hemen Kirala"}
                 </Button>
               </div>
             </div>
