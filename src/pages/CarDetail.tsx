@@ -53,6 +53,8 @@ const CarDetail = () => {
   const [driverRiskLevel, setDriverRiskLevel] = useState<string>("");
   const [lockStatus, setLockStatus] = useState<string>("locked");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [subscription, setSubscription] = useState<any>(null);
+  const [trafficDelayMinutes, setTrafficDelayMinutes] = useState(10);
 
   const handleInsuranceSelect = (packageId: string, price: number) => {
     setSelectedInsurance(packageId);
@@ -137,7 +139,27 @@ const CarDetail = () => {
 
   useEffect(() => {
     fetchCar();
-  }, [id]);
+    if (user) {
+      fetchUserSubscription();
+    }
+  }, [id, user]);
+
+  const fetchUserSubscription = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', user?.id)
+        .eq('status', 'active')
+        .gt('end_date', new Date().toISOString())
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      setSubscription(data);
+    } catch (error) {
+      console.error('Error fetching subscription:', error);
+    }
+  };
 
   const fetchCar = async () => {
     try {
@@ -198,7 +220,7 @@ const CarDetail = () => {
     );
   }
 
-  const handleReserve = () => {
+  const handleReserve = async () => {
     if (!user) {
       toast({
         title: "Giriş Gerekli",
@@ -226,17 +248,61 @@ const CarDetail = () => {
       return;
     }
 
-    const pricingText = selectedPricing === "minute" ? "Dakikalık" : 
-                       selectedPricing === "hour" ? "Saatlik" : "Günlük";
-    const kmText = selectedKmPackage ? ` + ${selectedKmPackage} KM paketi` : "";
+    const startTime = new Date();
+    const endTime = new Date();
+    let totalPrice = 0;
+    
+    // Calculate traffic delay (random 0-10 minutes for simulation)
+    const simulatedTrafficDelay = Math.floor(Math.random() * 11);
+    setTrafficDelayMinutes(simulatedTrafficDelay);
+    
+    if (selectedPricing === "hour") {
+      endTime.setHours(endTime.getHours() + 1);
+      totalPrice = car.price_per_hour;
+    } else if (selectedPricing === "day") {
+      endTime.setDate(endTime.getDate() + 1);
+      totalPrice = car.price_per_day;
+    } else if (selectedPricing === "minute") {
+      endTime.setMinutes(endTime.getMinutes() + 30);
+      totalPrice = car.price_per_minute * 30;
+    }
 
-    toast({
-      title: "Rezervasyon Başarılı!",
-      description: `${car.name} için ${pricingText} kiralama${kmText} ile rezervasyonunuz oluşturuldu.`,
-    });
-    setTimeout(() => {
-      navigate("/cars");
-    }, 2000);
+    // Apply subscription discount
+    if (subscription) {
+      const discount = (totalPrice * subscription.discount_percentage) / 100;
+      totalPrice = totalPrice - discount;
+    }
+
+    try {
+      const { error: bookingError } = await supabase.from("bookings").insert({
+        car_id: car.id,
+        user_id: user.id,
+        start_time: startTime.toISOString(),
+        end_time: endTime.toISOString(),
+        total_price: totalPrice,
+        rental_type: selectedPricing,
+        driver_history_checked: driverVerified,
+        driver_risk_level: driverRiskLevel || null,
+        traffic_delay_minutes: simulatedTrafficDelay,
+      });
+
+      if (bookingError) throw bookingError;
+
+      const discountText = subscription ? ` (%${subscription.discount_percentage} abonelik indirimi uygulandı)` : '';
+      const trafficText = simulatedTrafficDelay > 0 ? ` Trafik gecikmesi: +${simulatedTrafficDelay} dakika ücretsiz eklendi.` : '';
+      toast({
+        title: "Rezervasyon Başarılı!",
+        description: `${car.name} için rezervasyonunuz oluşturuldu.${discountText}${trafficText}`,
+      });
+      navigate("/");
+    } catch (error: any) {
+      console.error("Rezervasyon hatası:", error);
+      toast({
+        title: "Rezervasyon Hatası",
+        description: error.message || "Bir hata oluştu",
+        variant: "destructive",
+      });
+    }
   };
 
   // Get appropriate image based on car type
@@ -249,14 +315,22 @@ const CarDetail = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <main className="pt-24 pb-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <Link to="/cars" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors">
-            <ArrowLeft className="w-5 h-5" />
+      <main className="pt-20 pb-12 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <Link to="/cars" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors text-sm">
+            <ArrowLeft className="w-4 h-4" />
             Araçlara Dön
           </Link>
 
-          <div className="grid lg:grid-cols-2 gap-8 mb-12">
+          {subscription && (
+            <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+              <p className="text-sm font-medium text-amber-700 dark:text-amber-300">
+                🎉 {subscription.tier.toUpperCase()} üyesi olarak %{subscription.discount_percentage} indirim kazanıyorsunuz!
+              </p>
+            </div>
+          )}
+
+          <div className="grid lg:grid-cols-2 gap-6 mb-12">
             <div>
               <div className="relative rounded-2xl overflow-hidden mb-6">
                 <img 

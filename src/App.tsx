@@ -11,6 +11,7 @@ import CarDetail from "./pages/CarDetail";
 import Auth from "./pages/Auth";
 import AddCar from "./pages/AddCar";
 import MyCars from "./pages/MyCars";
+import Subscription from "./pages/Subscription";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import FAQ from "./pages/FAQ";
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/add-car" element={<AddCar />} />
             <Route path="/my-cars" element={<MyCars />} />
+            <Route path="/subscription" element={<Subscription />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/faq" element={<FAQ />} />

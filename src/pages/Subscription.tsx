@@ -1,0 +1,188 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+import { Check, Crown, Star, Zap } from "lucide-react";
+
+interface SubscriptionPlan {
+  tier: 'basic' | 'premium' | 'vip';
+  name: string;
+  price: number;
+  discount: number;
+  features: string[];
+  icon: React.ReactNode;
+  color: string;
+}
+
+const plans: SubscriptionPlan[] = [
+  {
+    tier: 'basic',
+    name: 'Temel',
+    price: 99,
+    discount: 5,
+    features: ['%5 indirim', 'Standart destek', 'Aylık raporlar'],
+    icon: <Zap className="h-6 w-6" />,
+    color: 'bg-blue-500'
+  },
+  {
+    tier: 'premium',
+    name: 'Premium',
+    price: 199,
+    discount: 15,
+    features: ['%15 indirim', 'Öncelikli destek', 'Haftalık raporlar', 'Erken rezervasyon'],
+    icon: <Star className="h-6 w-6" />,
+    color: 'bg-purple-500'
+  },
+  {
+    tier: 'vip',
+    name: 'VIP',
+    price: 299,
+    discount: 25,
+    features: ['%25 indirim', '7/24 VIP destek', 'Günlük raporlar', 'Erken rezervasyon', 'Ücretsiz trafik ek süresi'],
+    icon: <Crown className="h-6 w-6" />,
+    color: 'bg-amber-500'
+  }
+];
+
+export default function Subscription() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [currentSubscription, setCurrentSubscription] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+    fetchCurrentSubscription();
+  }, [user, navigate]);
+
+  const fetchCurrentSubscription = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', user?.id)
+        .eq('status', 'active')
+        .gt('end_date', new Date().toISOString())
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      setCurrentSubscription(data);
+    } catch (error: any) {
+      console.error('Error fetching subscription:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubscribe = async (plan: SubscriptionPlan) => {
+    if (!user) return;
+
+    try {
+      const endDate = new Date();
+      endDate.setMonth(endDate.getMonth() + 1);
+
+      const { error } = await supabase.from('subscriptions').insert({
+        user_id: user.id,
+        tier: plan.tier,
+        end_date: endDate.toISOString(),
+        discount_percentage: plan.discount,
+        status: 'active'
+      });
+
+      if (error) throw error;
+
+      toast.success(`${plan.name} paketine abone oldunuz!`);
+      fetchCurrentSubscription();
+    } catch (error: any) {
+      toast.error('Abonelik işlemi başarısız: ' + error.message);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col bg-background">
+      <Navbar />
+      <main className="flex-1 container mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">Abonelik Paketleri</h1>
+            <p className="text-muted-foreground text-sm md:text-base">
+              Size uygun paketi seçin ve özel kampanyalardan yararlanın
+            </p>
+          </div>
+
+          {currentSubscription && (
+            <Card className="mb-8 border-primary">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Badge variant="default">Aktif Abonelik</Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-lg">
+                  <strong>{plans.find(p => p.tier === currentSubscription.tier)?.name}</strong> paketiniz aktif
+                </p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Bitiş tarihi: {new Date(currentSubscription.end_date).toLocaleDateString('tr-TR')}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {plans.map((plan) => {
+              const isActive = currentSubscription?.tier === plan.tier;
+              
+              return (
+                <Card key={plan.tier} className={`relative ${isActive ? 'border-primary shadow-lg' : ''}`}>
+                  <CardHeader>
+                    <div className={`${plan.color} w-12 h-12 rounded-lg flex items-center justify-center text-white mb-4`}>
+                      {plan.icon}
+                    </div>
+                    <CardTitle className="text-xl">{plan.name}</CardTitle>
+                    <CardDescription>
+                      <span className="text-3xl font-bold text-foreground">₺{plan.price}</span>
+                      <span className="text-muted-foreground">/ay</span>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-3">
+                      {plan.features.map((feature, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                          <span className="text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                  <CardFooter>
+                    <Button
+                      className="w-full"
+                      onClick={() => handleSubscribe(plan)}
+                      disabled={isActive || loading}
+                      variant={isActive ? "outline" : "default"}
+                    >
+                      {isActive ? 'Aktif Paket' : 'Abone Ol'}
+                    </Button>
+                  </CardFooter>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+}

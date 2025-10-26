@@ -26,6 +26,7 @@ export type Database = {
           rental_type: string
           start_time: string
           total_price: number
+          traffic_delay_minutes: number | null
           updated_at: string | null
           user_id: string
         }
@@ -40,6 +41,7 @@ export type Database = {
           rental_type: string
           start_time: string
           total_price: number
+          traffic_delay_minutes?: number | null
           updated_at?: string | null
           user_id: string
         }
@@ -54,6 +56,7 @@ export type Database = {
           rental_type?: string
           start_time?: string
           total_price?: number
+          traffic_delay_minutes?: number | null
           updated_at?: string | null
           user_id?: string
         }
@@ -217,6 +220,42 @@ export type Database = {
         }
         Relationships: []
       }
+      subscriptions: {
+        Row: {
+          created_at: string | null
+          discount_percentage: number
+          end_date: string
+          id: string
+          start_date: string
+          status: string
+          tier: Database["public"]["Enums"]["subscription_tier"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          discount_percentage?: number
+          end_date: string
+          id?: string
+          start_date?: string
+          status?: string
+          tier?: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          discount_percentage?: number
+          end_date?: string
+          id?: string
+          start_date?: string
+          status?: string
+          tier?: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -296,6 +335,7 @@ export type Database = {
       app_role: "user" | "car_owner"
       car_type: "compact" | "sedan" | "suv"
       fuel_type: "Benzin" | "Dizel" | "Elektrik" | "Hibrit"
+      subscription_tier: "basic" | "premium" | "vip"
       transmission_type: "Manuel" | "Otomatik"
     }
     CompositeTypes: {
@@ -427,6 +467,7 @@ export const Constants = {
       app_role: ["user", "car_owner"],
       car_type: ["compact", "sedan", "suv"],
       fuel_type: ["Benzin", "Dizel", "Elektrik", "Hibrit"],
+      subscription_tier: ["basic", "premium", "vip"],
       transmission_type: ["Manuel", "Otomatik"],
     },
   },

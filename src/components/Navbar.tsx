@@ -72,6 +72,12 @@ const Navbar = () => {
                         Araç Ekle
                       </DropdownMenuItem>
                     </Link>
+                    <Link to="/subscription">
+                      <DropdownMenuItem>
+                        <Car className="w-4 h-4 mr-2" />
+                        Abonelik
+                      </DropdownMenuItem>
+                    </Link>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={signOut}>
                       <LogOut className="w-4 h-4 mr-2" />
