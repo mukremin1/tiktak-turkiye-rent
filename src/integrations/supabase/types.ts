@@ -79,6 +79,7 @@ export type Database = {
           km_packages: Json | null
           latitude: number | null
           location: string
+          lock_status: string | null
           longitude: number | null
           name: string
           owner_id: string
@@ -104,6 +105,7 @@ export type Database = {
           km_packages?: Json | null
           latitude?: number | null
           location: string
+          lock_status?: string | null
           longitude?: number | null
           name: string
           owner_id: string
@@ -129,6 +131,7 @@ export type Database = {
           km_packages?: Json | null
           latitude?: number | null
           location?: string
+          lock_status?: string | null
           longitude?: number | null
           name?: string
           owner_id?: string
@@ -234,6 +237,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      vehicle_actions: {
+        Row: {
+          action_type: string
+          car_id: string
+          id: string
+          latitude: number | null
+          longitude: number | null
+          notes: string | null
+          timestamp: string | null
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          car_id: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          notes?: string | null
+          timestamp?: string | null
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          car_id?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          notes?: string | null
+          timestamp?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_actions_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

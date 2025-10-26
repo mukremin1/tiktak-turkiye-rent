@@ -4,12 +4,13 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Users, Fuel, Settings, Shield, Clock, ArrowLeft, Star } from "lucide-react";
+import { MapPin, Users, Fuel, Settings, Shield, Clock, ArrowLeft, Star, Lock, Unlock, Navigation } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import InsurancePackages from "@/components/InsurancePackages";
 import DriverHistoryForm from "@/components/DriverHistoryForm";
+import CarLocationMap from "@/components/CarLocationMap";
 import carCompact from "@/assets/car-compact.jpg";
 import carSedan from "@/assets/car-sedan.jpg";
 import carSuv from "@/assets/car-suv.jpg";
@@ -32,6 +33,9 @@ interface Car {
   plate_number: string | null;
   year: number | null;
   description: string | null;
+  lock_status: string | null;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 const CarDetail = () => {
@@ -47,6 +51,8 @@ const CarDetail = () => {
   const [insurancePrice, setInsurancePrice] = useState(0);
   const [driverVerified, setDriverVerified] = useState(false);
   const [driverRiskLevel, setDriverRiskLevel] = useState<string>("");
+  const [lockStatus, setLockStatus] = useState<string>("locked");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleInsuranceSelect = (packageId: string, price: number) => {
     setSelectedInsurance(packageId);
@@ -56,6 +62,77 @@ const CarDetail = () => {
   const handleDriverVerification = (isApproved: boolean, riskLevel: string) => {
     setDriverVerified(isApproved);
     setDriverRiskLevel(riskLevel);
+  };
+
+  const handleLockToggle = async () => {
+    if (!user || !car) return;
+    
+    setIsProcessing(true);
+    const newStatus = lockStatus === "locked" ? "unlocked" : "locked";
+    
+    try {
+      // Update car lock status
+      const { error: updateError } = await supabase
+        .from("cars")
+        .update({ lock_status: newStatus })
+        .eq("id", car.id);
+
+      if (updateError) throw updateError;
+
+      // Log the action
+      const { error: logError } = await supabase
+        .from("vehicle_actions")
+        .insert({
+          car_id: car.id,
+          user_id: user.id,
+          action_type: newStatus === "locked" ? "lock" : "unlock",
+          latitude: car.latitude,
+          longitude: car.longitude,
+        });
+
+      if (logError) throw logError;
+
+      setLockStatus(newStatus);
+      toast({
+        title: newStatus === "locked" ? "Araç Kilitlendi" : "Araç Kilidi Açıldı",
+        description: `${car.name} ${newStatus === "locked" ? "kilitlendi" : "kilidi açıldı"}`,
+      });
+    } catch (error) {
+      console.error("Kilit işlemi hatası:", error);
+      toast({
+        title: "Hata",
+        description: "Kilit işlemi yapılamadı",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleLocationCheck = async () => {
+    if (!user || !car) return;
+
+    try {
+      // Log location check action
+      const { error } = await supabase
+        .from("vehicle_actions")
+        .insert({
+          car_id: car.id,
+          user_id: user.id,
+          action_type: "location_check",
+          latitude: car.latitude,
+          longitude: car.longitude,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Konum Güncellendi",
+        description: "Araç konumu kontrol edildi",
+      });
+    } catch (error) {
+      console.error("Konum kontrolü hatası:", error);
+    }
   };
 
   useEffect(() => {
@@ -81,6 +158,9 @@ const CarDetail = () => {
       }
 
       setCar(data as Car);
+      if (data?.lock_status) {
+        setLockStatus(data.lock_status);
+      }
     } catch (error) {
       console.error("Araç yüklenirken hata:", error);
     } finally {
@@ -243,6 +323,68 @@ const CarDetail = () => {
                   </div>
                 )}
               </div>
+
+              {car.latitude && car.longitude && (
+                <div className="mt-6">
+                  <div className="bg-card border border-border rounded-2xl p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-semibold text-foreground text-lg">Araç Konumu</h3>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleLocationCheck}
+                        className="gap-2"
+                      >
+                        <Navigation className="w-4 h-4" />
+                        Konumu Güncelle
+                      </Button>
+                    </div>
+                    <CarLocationMap
+                      latitude={Number(car.latitude)}
+                      longitude={Number(car.longitude)}
+                      carName={car.name}
+                    />
+                    <div className="mt-4 flex gap-3">
+                      <Button
+                        variant={lockStatus === "locked" ? "default" : "outline"}
+                        className="flex-1 gap-2"
+                        onClick={handleLockToggle}
+                        disabled={isProcessing || !user}
+                      >
+                        {lockStatus === "locked" ? (
+                          <>
+                            <Lock className="w-4 h-4" />
+                            Kilitli
+                          </>
+                        ) : (
+                          <>
+                            <Unlock className="w-4 h-4" />
+                            Açık
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="flex-1 gap-2"
+                        onClick={handleLockToggle}
+                        disabled={isProcessing || !user}
+                      >
+                        {lockStatus === "locked" ? (
+                          <>
+                            <Unlock className="w-4 h-4" />
+                            Kilidi Aç
+                          </>
+                        ) : (
+                          <>
+                            <Lock className="w-4 h-4" />
+                            Kilitle
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div>
