@@ -15,14 +15,14 @@ const Navbar = () => {
   const { user, signOut } = useAuth();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border pt-safe">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-2 transition-transform hover:scale-105">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Car className="w-6 h-6 text-primary-foreground" />
+        <div className="flex items-center justify-between h-14 md:h-16">
+          <Link to="/" className="flex items-center gap-2 transition-transform active:scale-95 md:hover:scale-105">
+            <div className="w-9 h-9 md:w-10 md:h-10 bg-primary rounded-lg flex items-center justify-center">
+              <Car className="w-5 h-5 md:w-6 md:h-6 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold text-foreground">RideYo</span>
+            <span className="text-lg md:text-xl font-bold text-foreground">RideYo</span>
           </Link>
           
           <div className="hidden md:flex items-center gap-8">
@@ -37,27 +37,27 @@ const Navbar = () => {
             </a>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             {user ? (
               <>
-                <Link to="/my-cars" className="hidden sm:inline-flex">
+                <Link to="/my-cars" className="hidden md:inline-flex">
                   <Button variant="ghost">
                     Araçlarım
                   </Button>
                 </Link>
-                <Link to="/add-car">
-                  <Button variant="outline" className="hidden sm:inline-flex">
+                <Link to="/add-car" className="hidden md:inline-flex">
+                  <Button variant="outline">
                     <Plus className="w-4 h-4 mr-2" />
                     Araç Ekle
                   </Button>
                 </Link>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="default" size="icon">
-                      <User className="w-5 h-5" />
+                    <Button variant="default" size="icon" className="h-9 w-9 md:h-10 md:w-10">
+                      <User className="w-4 h-4 md:w-5 md:h-5" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuContent align="end" className="w-56 bg-popover">
                     <DropdownMenuLabel>Hesabım</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <Link to="/my-cars">
@@ -88,13 +88,13 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Link to="/auth">
-                  <Button variant="ghost" className="hidden sm:inline-flex">
+                <Link to="/auth" className="hidden md:inline-flex">
+                  <Button variant="ghost">
                     Giriş Yap
                   </Button>
                 </Link>
                 <Link to="/auth">
-                  <Button variant="default">
+                  <Button variant="default" size="sm" className="h-9 md:h-10">
                     Üye Ol
                   </Button>
                 </Link>

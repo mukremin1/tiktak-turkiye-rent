@@ -87,4 +87,33 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Mobile App Optimizations */
+  @supports (padding: env(safe-area-inset-bottom)) {
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    
+    .pt-safe {
+      padding-top: env(safe-area-inset-top);
+    }
+  }
+
+  /* Hide scrollbar for mobile app feel */
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Touch feedback */
+  @media (hover: none) {
+    button:active,
+    a:active {
+      opacity: 0.7;
+    }
+  }
 }

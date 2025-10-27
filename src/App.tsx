@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import Chatbot from "@/components/Chatbot";
+import BottomNav from "@/components/BottomNav";
 import Index from "./pages/Index";
 import Cars from "./pages/Cars";
 import CarDetail from "./pages/CarDetail";
@@ -47,6 +48,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <BottomNav />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
