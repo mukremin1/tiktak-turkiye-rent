@@ -4,7 +4,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Users, Fuel, Settings, Shield, Clock, ArrowLeft, Star, Lock, Unlock, Navigation } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MapPin, Users, Fuel, Settings, Shield, Clock, ArrowLeft, Star, Lock, Unlock, Navigation, Calendar, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -488,73 +489,192 @@ const CarDetail = () => {
                 </div>
 
                 <div className="border-t border-border pt-6 mb-6">
-                  <h3 className="font-semibold text-foreground mb-4 text-lg">Fiyatlandırma Seçin</h3>
-                  <div className="space-y-3">
-                    <Button
-                      variant={selectedPricing === "minute" ? "default" : "outline"}
-                      className="w-full h-auto py-4 flex items-center justify-between"
-                      onClick={() => setSelectedPricing("minute")}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-5 h-5" />
-                        <span>Dakikalık</span>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold">{car.price_per_minute}₺</div>
-                        <div className="text-xs opacity-70">dakika başı</div>
-                      </div>
-                    </Button>
+                  <h3 className="font-semibold text-foreground mb-4 text-lg">Kiralama Paketleri</h3>
+                  
+                  <Tabs defaultValue="minute" className="w-full">
+                    <TabsList className="grid w-full grid-cols-4">
+                      <TabsTrigger value="minute">Dakika</TabsTrigger>
+                      <TabsTrigger value="hour">Saat</TabsTrigger>
+                      <TabsTrigger value="day">Gün</TabsTrigger>
+                      <TabsTrigger value="km">KM</TabsTrigger>
+                    </TabsList>
 
-                    <Button
-                      variant={selectedPricing === "hour" ? "default" : "outline"}
-                      className="w-full h-auto py-4 flex items-center justify-between"
-                      onClick={() => setSelectedPricing("hour")}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-5 h-5" />
-                        <span>Saatlik</span>
+                    <TabsContent value="minute" className="space-y-4 mt-4">
+                      <div className="bg-primary/5 border border-primary/20 rounded-xl p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <Clock className="w-8 h-8 text-primary" />
+                            <div>
+                              <h4 className="font-bold text-xl">Dakikalık Kiralama</h4>
+                              <p className="text-sm text-muted-foreground">Esnek kullanım</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-3xl font-bold text-primary">{car.price_per_minute}₺</div>
+                            <div className="text-xs text-muted-foreground">dakika başı</div>
+                          </div>
+                        </div>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">15 Dakika</span>
+                            <span className="font-semibold">{(car.price_per_minute * 15).toFixed(2)}₺</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">30 Dakika</span>
+                            <span className="font-semibold">{(car.price_per_minute * 30).toFixed(2)}₺</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">45 Dakika</span>
+                            <span className="font-semibold">{(car.price_per_minute * 45).toFixed(2)}₺</span>
+                          </div>
+                        </div>
+                        <Button
+                          variant={selectedPricing === "minute" ? "default" : "outline"}
+                          className="w-full mt-4"
+                          onClick={() => setSelectedPricing("minute")}
+                        >
+                          {selectedPricing === "minute" ? "✓ Seçildi" : "Seç"}
+                        </Button>
                       </div>
-                      <div className="text-xl font-semibold">{car.price_per_hour}₺</div>
-                    </Button>
+                    </TabsContent>
 
-                    <Button
-                      variant={selectedPricing === "day" ? "default" : "outline"}
-                      className="w-full h-auto py-4 flex items-center justify-between"
-                      onClick={() => setSelectedPricing("day")}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-5 h-5" />
-                        <span>Günlük</span>
+                    <TabsContent value="hour" className="space-y-4 mt-4">
+                      <div className="bg-primary/5 border border-primary/20 rounded-xl p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <Clock className="w-8 h-8 text-primary" />
+                            <div>
+                              <h4 className="font-bold text-xl">Saatlik Kiralama</h4>
+                              <p className="text-sm text-muted-foreground">Popüler seçenek</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-3xl font-bold text-primary">{car.price_per_hour}₺</div>
+                            <div className="text-xs text-muted-foreground">saat başı</div>
+                          </div>
+                        </div>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">1 Saat</span>
+                            <span className="font-semibold">{car.price_per_hour}₺</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">2 Saat</span>
+                            <span className="font-semibold">{(car.price_per_hour * 2).toFixed(2)}₺</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">4 Saat</span>
+                            <span className="font-semibold">{(car.price_per_hour * 4).toFixed(2)}₺</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">8 Saat</span>
+                            <span className="font-semibold">{(car.price_per_hour * 8).toFixed(2)}₺</span>
+                          </div>
+                        </div>
+                        <Button
+                          variant={selectedPricing === "hour" ? "default" : "outline"}
+                          className="w-full mt-4"
+                          onClick={() => setSelectedPricing("hour")}
+                        >
+                          {selectedPricing === "hour" ? "✓ Seçildi" : "Seç"}
+                        </Button>
                       </div>
-                      <div className="text-xl font-semibold">{car.price_per_day}₺</div>
-                    </Button>
-                  </div>
+                    </TabsContent>
 
-                  <div className="mt-4 pt-4 border-t border-border">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-muted-foreground">KM Başı Ücret</span>
-                      <span className="font-semibold">{car.price_per_km}₺/km</span>
-                    </div>
-                  </div>
-
-                  {car.km_packages && Object.keys(car.km_packages).length > 0 && (
-                    <div className="mt-6 pt-6 border-t border-border">
-                      <h4 className="font-semibold text-foreground mb-3">KM Paketleri (Opsiyonel)</h4>
-                      <div className="grid grid-cols-2 gap-3">
-                        {Object.entries(car.km_packages).map(([km, price]) => (
-                          <Button
-                            key={km}
-                            variant={selectedKmPackage === km ? "default" : "outline"}
-                            className="h-auto py-3 flex flex-col items-center gap-1"
-                            onClick={() => setSelectedKmPackage(selectedKmPackage === km ? null : km)}
-                          >
-                            <span className="font-semibold">{km} KM</span>
-                            <span className="text-lg font-bold">{price}₺</span>
-                          </Button>
-                        ))}
+                    <TabsContent value="day" className="space-y-4 mt-4">
+                      <div className="bg-primary/5 border border-primary/20 rounded-xl p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <Calendar className="w-8 h-8 text-primary" />
+                            <div>
+                              <h4 className="font-bold text-xl">Günlük Kiralama</h4>
+                              <p className="text-sm text-muted-foreground">En ekonomik</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-3xl font-bold text-primary">{car.price_per_day}₺</div>
+                            <div className="text-xs text-muted-foreground">günlük</div>
+                          </div>
+                        </div>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">1 Gün</span>
+                            <span className="font-semibold">{car.price_per_day}₺</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">3 Gün</span>
+                            <span className="font-semibold">{(car.price_per_day * 3).toFixed(2)}₺</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">7 Gün</span>
+                            <span className="font-semibold text-primary">{(car.price_per_day * 7).toFixed(2)}₺</span>
+                          </div>
+                          <div className="flex justify-between border-t pt-2">
+                            <span className="text-muted-foreground">1 Ay (30 gün)</span>
+                            <span className="font-bold text-lg text-primary">{(car.price_per_day * 30).toFixed(2)}₺</span>
+                          </div>
+                        </div>
+                        <Button
+                          variant={selectedPricing === "day" ? "default" : "outline"}
+                          className="w-full mt-4"
+                          onClick={() => setSelectedPricing("day")}
+                        >
+                          {selectedPricing === "day" ? "✓ Seçildi" : "Seç"}
+                        </Button>
                       </div>
-                    </div>
-                  )}
+                    </TabsContent>
+
+                    <TabsContent value="km" className="space-y-4 mt-4">
+                      <div className="bg-primary/5 border border-primary/20 rounded-xl p-6 mb-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <TrendingUp className="w-6 h-6 text-primary" />
+                            <div>
+                              <h4 className="font-semibold">KM Başı Ücret</h4>
+                              <p className="text-xs text-muted-foreground">Temel fiyat</p>
+                            </div>
+                          </div>
+                          <div className="text-2xl font-bold text-primary">{car.price_per_km}₺/km</div>
+                        </div>
+                      </div>
+
+                      {car.km_packages && Object.keys(car.km_packages).length > 0 && (
+                        <div>
+                          <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                            <Badge variant="secondary">Avantajlı</Badge>
+                            KM Paketleri
+                          </h4>
+                          <div className="grid grid-cols-2 gap-3">
+                            {Object.entries(car.km_packages).map(([km, price]) => {
+                              const perKmPrice = (price / Number(km)).toFixed(2);
+                              const discount = ((1 - Number(perKmPrice) / car.price_per_km) * 100).toFixed(0);
+                              return (
+                                <div
+                                  key={km}
+                                  className={`border rounded-xl p-4 cursor-pointer transition-all ${
+                                    selectedKmPackage === km
+                                      ? "border-primary bg-primary/5 shadow-md"
+                                      : "border-border hover:border-primary/50"
+                                  }`}
+                                  onClick={() => setSelectedKmPackage(selectedKmPackage === km ? null : km)}
+                                >
+                                  {Number(discount) > 0 && (
+                                    <Badge variant="default" className="mb-2 text-xs">%{discount} İndirim</Badge>
+                                  )}
+                                  <div className="text-2xl font-bold text-foreground">{km} KM</div>
+                                  <div className="text-xl font-semibold text-primary mb-1">{price}₺</div>
+                                  <div className="text-xs text-muted-foreground">{perKmPrice}₺/km</div>
+                                  {selectedKmPackage === km && (
+                                    <div className="mt-2 text-xs font-semibold text-primary">✓ Seçildi</div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </TabsContent>
+                  </Tabs>
                 </div>
 
                 <InsurancePackages 

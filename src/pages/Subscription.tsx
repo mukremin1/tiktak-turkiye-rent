@@ -26,7 +26,13 @@ const plans: SubscriptionPlan[] = [
     name: 'Temel',
     price: 99,
     discount: 5,
-    features: ['%5 indirim', 'Standart destek', 'Aylık raporlar'],
+    features: [
+      '%5 indirim tüm kiralamalarınızda',
+      'Standart müşteri desteği',
+      'Aylık kullanım raporları',
+      'Temel sigorta paketi',
+      'Ücretsiz iptal (15 dk önce)'
+    ],
     icon: <Zap className="h-6 w-6" />,
     color: 'bg-blue-500'
   },
@@ -35,7 +41,15 @@ const plans: SubscriptionPlan[] = [
     name: 'Premium',
     price: 199,
     discount: 15,
-    features: ['%15 indirim', 'Öncelikli destek', 'Haftalık raporlar', 'Erken rezervasyon'],
+    features: [
+      '%15 indirim tüm kiralamalarınızda',
+      'Öncelikli müşteri desteği',
+      'Haftalık detaylı raporlar',
+      'Gelişmiş sigorta paketi',
+      'Erken rezervasyon hakkı',
+      'Ücretsiz araç değişikliği',
+      'Ücretsiz iptal (30 dk önce)'
+    ],
     icon: <Star className="h-6 w-6" />,
     color: 'bg-purple-500'
   },
@@ -44,7 +58,17 @@ const plans: SubscriptionPlan[] = [
     name: 'VIP',
     price: 299,
     discount: 25,
-    features: ['%25 indirim', '7/24 VIP destek', 'Günlük raporlar', 'Erken rezervasyon', 'Ücretsiz trafik ek süresi'],
+    features: [
+      '%25 indirim tüm kiralamalarınızda',
+      '7/24 özel VIP destek',
+      'Günlük detaylı kullanım raporları',
+      'Premium sigorta paketi',
+      'Öncelikli erken rezervasyon',
+      'Ücretsiz trafik ek süresi',
+      'Ücretsiz havalimanı teslimat',
+      'Lüks araç kategorisi erişimi',
+      'Ücretsiz iptal (1 saat önce)'
+    ],
     icon: <Crown className="h-6 w-6" />,
     color: 'bg-amber-500'
   }
@@ -116,10 +140,15 @@ export default function Subscription() {
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">Abonelik Paketleri</h1>
-            <p className="text-muted-foreground text-sm md:text-base">
-              Size uygun paketi seçin ve özel kampanyalardan yararlanın
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">Aylık Abonelik Paketleri</h1>
+            <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
+              Size uygun aylık paketi seçin ve tüm kiralamalarınızda büyük indirimlerden yararlanın. 
+              Dakikalık, saatlik ve günlük tüm kiralama seçeneklerinde geçerlidir.
             </p>
+            <div className="mt-4 inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
+              <Zap className="h-4 w-4" />
+              Tüm paketler aylık otomatik yenilenir
+            </div>
           </div>
 
           {currentSubscription && (
