@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Car, User, LogOut, Plus, Heart, Bell, Shield } from "lucide-react";
+import { Car, User, LogOut, Plus, Heart, Bell, Shield, MessageCircle, AlertTriangle, Award } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import {
@@ -150,6 +150,19 @@ const Navbar = () => {
                     <DropdownMenuItem onClick={() => navigate("/subscription")}>
                       <Car className="w-4 h-4 mr-2" />
                       Abonelik
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate("/driver-score")}>
+                      <Award className="w-4 h-4 mr-2" />
+                      Sürücü Puanım
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/vehicle-alerts")}>
+                      <AlertTriangle className="w-4 h-4 mr-2" />
+                      Araç Uyarıları
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/support")}>
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      Destek
                     </DropdownMenuItem>
                     {isAdmin && (
                       <>

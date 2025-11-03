@@ -153,8 +153,11 @@ export type Database = {
       }
       driver_history: {
         Row: {
+          blocked_reason: string | null
           created_at: string
+          driver_score: number | null
           id: string
+          is_approved: boolean | null
           last_violation_date: string | null
           license_number: string
           notes: string | null
@@ -166,8 +169,11 @@ export type Database = {
           verification_status: string
         }
         Insert: {
+          blocked_reason?: string | null
           created_at?: string
+          driver_score?: number | null
           id?: string
+          is_approved?: boolean | null
           last_violation_date?: string | null
           license_number: string
           notes?: string | null
@@ -179,8 +185,11 @@ export type Database = {
           verification_status?: string
         }
         Update: {
+          blocked_reason?: string | null
           created_at?: string
+          driver_score?: number | null
           id?: string
+          is_approved?: boolean | null
           last_violation_date?: string | null
           license_number?: string
           notes?: string | null
@@ -318,17 +327,85 @@ export type Database = {
           },
         ]
       }
+      vehicle_alerts: {
+        Row: {
+          alert_type: string
+          car_id: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_resolved: boolean | null
+          latitude: number | null
+          longitude: number | null
+          metadata: Json | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          updated_at: string | null
+        }
+        Insert: {
+          alert_type: string
+          car_id: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          metadata?: Json | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity: string
+          updated_at?: string | null
+        }
+        Update: {
+          alert_type?: string
+          car_id?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          metadata?: Json | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_alerts_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      check_driver_eligibility: {
+        Args: { p_user_id: string }
+        Returns: {
+          driver_score: number
+          is_eligible: boolean
+          reason: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      update_driver_score: {
+        Args: { p_change: number; p_reason: string; p_user_id: string }
+        Returns: undefined
       }
     }
     Enums: {

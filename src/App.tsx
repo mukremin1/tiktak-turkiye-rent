@@ -16,6 +16,9 @@ import Subscription from "./pages/Subscription";
 import Admin from "./pages/Admin";
 import Favorites from "./pages/Favorites";
 import Notifications from "./pages/Notifications";
+import Support from "./pages/Support";
+import VehicleAlerts from "./pages/VehicleAlerts";
+import DriverScore from "./pages/DriverScore";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import FAQ from "./pages/FAQ";
@@ -45,6 +48,9 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/favorites" element={<Favorites />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/vehicle-alerts" element={<VehicleAlerts />} />
+            <Route path="/driver-score" element={<DriverScore />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/faq" element={<FAQ />} />
