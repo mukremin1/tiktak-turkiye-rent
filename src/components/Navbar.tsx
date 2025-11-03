@@ -1,7 +1,7 @@
-import { Car, User, LogOut, Plus } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Car, User, LogOut, Plus, Heart, Bell, Shield } from "lucide-react";
 import { Button } from "./ui/button";
-import { Link } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import { Badge } from "./ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,10 +9,60 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "./ui/dropdown-menu";
+import { useAuth } from "@/hooks/useAuth";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      fetchUnreadNotifications();
+      checkAdminRole();
+      
+      const channel = supabase
+        .channel('notifications')
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`
+        }, () => {
+          fetchUnreadNotifications();
+        })
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [user]);
+
+  const fetchUnreadNotifications = async () => {
+    const { count } = await supabase
+      .from("notifications")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user?.id)
+      .eq("is_read", false);
+
+    setUnreadCount(count || 0);
+  };
+
+  const checkAdminRole = async () => {
+    const { data } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user?.id)
+      .eq("role", "admin")
+      .single();
+
+    setIsAdmin(!!data);
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border pt-safe">
@@ -40,6 +90,21 @@ const Navbar = () => {
           <div className="flex items-center gap-2 md:gap-3">
             {user ? (
               <>
+                <Link to="/favorites" className="hidden md:block">
+                  <Button variant="ghost" size="icon">
+                    <Heart className="w-5 h-5" />
+                  </Button>
+                </Link>
+                <Link to="/notifications" className="hidden md:block">
+                  <Button variant="ghost" size="icon" className="relative">
+                    <Bell className="w-5 h-5" />
+                    {unreadCount > 0 && (
+                      <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                        {unreadCount}
+                      </Badge>
+                    )}
+                  </Button>
+                </Link>
                 <Link to="/my-cars" className="hidden md:inline-flex">
                   <Button variant="ghost">
                     Araçlarım
@@ -60,24 +125,41 @@ const Navbar = () => {
                   <DropdownMenuContent align="end" className="w-56 bg-popover">
                     <DropdownMenuLabel>Hesabım</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <Link to="/my-cars">
-                      <DropdownMenuItem>
-                        <Car className="w-4 h-4 mr-2" />
-                        Araçlarım
-                      </DropdownMenuItem>
-                    </Link>
-                    <Link to="/add-car">
-                      <DropdownMenuItem>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Araç Ekle
-                      </DropdownMenuItem>
-                    </Link>
-                    <Link to="/subscription">
-                      <DropdownMenuItem>
-                        <Car className="w-4 h-4 mr-2" />
-                        Abonelik
-                      </DropdownMenuItem>
-                    </Link>
+                    <DropdownMenuItem onClick={() => navigate("/favorites")}>
+                      <Heart className="w-4 h-4 mr-2" />
+                      Favorilerim
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/notifications")}>
+                      <Bell className="w-4 h-4 mr-2" />
+                      Bildirimler
+                      {unreadCount > 0 && (
+                        <Badge variant="secondary" className="ml-auto">
+                          {unreadCount}
+                        </Badge>
+                      )}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate("/my-cars")}>
+                      <Car className="w-4 h-4 mr-2" />
+                      Araçlarım
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/add-car")}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Araç Ekle
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/subscription")}>
+                      <Car className="w-4 h-4 mr-2" />
+                      Abonelik
+                    </DropdownMenuItem>
+                    {isAdmin && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => navigate("/admin")}>
+                          <Shield className="w-4 h-4 mr-2" />
+                          Admin Panel
+                        </DropdownMenuItem>
+                      </>
+                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={signOut}>
                       <LogOut className="w-4 h-4 mr-2" />

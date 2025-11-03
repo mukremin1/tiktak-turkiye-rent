@@ -1,14 +1,91 @@
 import { Car as CarType } from "@/types/car";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { MapPin, Users, Fuel, Settings, Clock } from "lucide-react";
+import { MapPin, Users, Fuel, Settings, Clock, Heart, Tag } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 interface CarCardProps {
   car: CarType;
 }
 
+interface Campaign {
+  discount_percentage: number;
+  name: string;
+}
+
 const CarCard = ({ car }: CarCardProps) => {
+  const { user } = useAuth();
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [campaign, setCampaign] = useState<Campaign | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      checkFavorite();
+    }
+    fetchActiveCampaign();
+  }, [user, car.id]);
+
+  const checkFavorite = async () => {
+    const { data } = await supabase
+      .from("favorites")
+      .select("id")
+      .eq("user_id", user?.id)
+      .eq("car_id", car.id)
+      .single();
+
+    setIsFavorite(!!data);
+  };
+
+  const fetchActiveCampaign = async () => {
+    const now = new Date().toISOString();
+    const { data } = await supabase
+      .from("campaigns")
+      .select("discount_percentage, name")
+      .eq("is_active", true)
+      .lte("start_date", now)
+      .gte("end_date", now)
+      .or(`car_types.is.null,car_types.cs.{${car.type}}`)
+      .order("discount_percentage", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (data) {
+      setCampaign(data);
+    }
+  };
+
+  const toggleFavorite = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!user) {
+      toast.error("Favori eklemek için giriş yapmalısınız");
+      return;
+    }
+
+    if (isFavorite) {
+      await supabase
+        .from("favorites")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("car_id", car.id);
+      setIsFavorite(false);
+      toast.success("Favorilerden çıkarıldı");
+    } else {
+      await supabase
+        .from("favorites")
+        .insert({ user_id: user.id, car_id: car.id });
+      setIsFavorite(true);
+      toast.success("Favorilere eklendi");
+    }
+  };
+
+  const discountedPrice = campaign
+    ? car.pricePerMinute * (1 - campaign.discount_percentage / 100)
+    : car.pricePerMinute;
+
   return (
     <div className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 group">
       <div className="relative h-48 overflow-hidden">
@@ -17,6 +94,20 @@ const CarCard = ({ car }: CarCardProps) => {
           alt={car.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
+        <Button
+          variant="ghost"
+          size="sm"
+          className="absolute top-4 left-4 bg-background/80 backdrop-blur-sm hover:bg-background"
+          onClick={toggleFavorite}
+        >
+          <Heart className={`w-5 h-5 ${isFavorite ? "fill-red-500 text-red-500" : ""}`} />
+        </Button>
+        {campaign && (
+          <Badge className="absolute top-4 left-14 bg-amber-500 text-white gap-1">
+            <Tag className="w-3 h-3" />
+            %{campaign.discount_percentage}
+          </Badge>
+        )}
         {car.available ? (
           <Badge className="absolute top-4 right-4 bg-primary text-primary-foreground">
             Müsait
@@ -62,8 +153,18 @@ const CarCard = ({ car }: CarCardProps) => {
         <div className="border-t border-border pt-4">
           <div className="flex items-baseline justify-between mb-4">
             <div>
-              <span className="text-3xl font-bold text-foreground">{car.pricePerMinute}₺</span>
-              <span className="text-sm text-muted-foreground ml-1">/dakika</span>
+              {campaign ? (
+                <>
+                  <span className="text-2xl font-bold text-foreground">{discountedPrice.toFixed(2)}₺</span>
+                  <span className="text-sm text-muted-foreground line-through ml-2">{car.pricePerMinute}₺</span>
+                  <span className="text-sm text-muted-foreground ml-1">/dakika</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-3xl font-bold text-foreground">{car.pricePerMinute}₺</span>
+                  <span className="text-sm text-muted-foreground ml-1">/dakika</span>
+                </>
+              )}
             </div>
             <div className="text-right">
               <div className="text-sm text-muted-foreground">{car.pricePerDay}₺/gün</div>

@@ -1,4 +1,4 @@
-import { Home, Car, Plus, User, Search } from "lucide-react";
+import { Home, Car, Plus, User, Search, Heart } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -36,6 +36,20 @@ const BottomNav = () => {
           <Search className="w-6 h-6" />
           <span className="text-xs font-medium">Araçlar</span>
         </Link>
+
+        {user && (
+          <Link 
+            to="/favorites" 
+            className={`flex flex-col items-center gap-1 px-4 py-2 rounded-lg transition-all ${
+              isActive("/favorites") 
+                ? "text-primary bg-primary/10" 
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Heart className="w-6 h-6" />
+            <span className="text-xs font-medium">Favoriler</span>
+          </Link>
+        )}
 
         {user && (
           <>
