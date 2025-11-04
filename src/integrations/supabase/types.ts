@@ -112,13 +112,17 @@ export type Database = {
       cars: {
         Row: {
           available: boolean | null
+          battery_level: number | null
           city: string | null
           created_at: string | null
           description: string | null
           fuel_type: Database["public"]["Enums"]["fuel_type"]
+          gps_device_id: string | null
+          heading: number | null
           id: string
           image_url: string | null
           km_packages: Json | null
+          last_gps_update: string | null
           latitude: number | null
           location: string
           lock_status: string | null
@@ -131,6 +135,7 @@ export type Database = {
           price_per_km: number | null
           price_per_minute: number
           seats: number
+          speed: number | null
           transmission: Database["public"]["Enums"]["transmission_type"]
           type: Database["public"]["Enums"]["car_type"]
           updated_at: string | null
@@ -138,13 +143,17 @@ export type Database = {
         }
         Insert: {
           available?: boolean | null
+          battery_level?: number | null
           city?: string | null
           created_at?: string | null
           description?: string | null
           fuel_type: Database["public"]["Enums"]["fuel_type"]
+          gps_device_id?: string | null
+          heading?: number | null
           id?: string
           image_url?: string | null
           km_packages?: Json | null
+          last_gps_update?: string | null
           latitude?: number | null
           location: string
           lock_status?: string | null
@@ -157,6 +166,7 @@ export type Database = {
           price_per_km?: number | null
           price_per_minute: number
           seats: number
+          speed?: number | null
           transmission: Database["public"]["Enums"]["transmission_type"]
           type: Database["public"]["Enums"]["car_type"]
           updated_at?: string | null
@@ -164,13 +174,17 @@ export type Database = {
         }
         Update: {
           available?: boolean | null
+          battery_level?: number | null
           city?: string | null
           created_at?: string | null
           description?: string | null
           fuel_type?: Database["public"]["Enums"]["fuel_type"]
+          gps_device_id?: string | null
+          heading?: number | null
           id?: string
           image_url?: string | null
           km_packages?: Json | null
+          last_gps_update?: string | null
           latitude?: number | null
           location?: string
           lock_status?: string | null
@@ -183,6 +197,7 @@ export type Database = {
           price_per_km?: number | null
           price_per_minute?: number
           seats?: number
+          speed?: number | null
           transmission?: Database["public"]["Enums"]["transmission_type"]
           type?: Database["public"]["Enums"]["car_type"]
           updated_at?: string | null
@@ -263,6 +278,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "favorites_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gps_location_history: {
+        Row: {
+          accuracy: number | null
+          car_id: string
+          created_at: string | null
+          heading: number | null
+          id: string
+          latitude: number
+          longitude: number
+          speed: number | null
+          timestamp: string
+        }
+        Insert: {
+          accuracy?: number | null
+          car_id: string
+          created_at?: string | null
+          heading?: number | null
+          id?: string
+          latitude: number
+          longitude: number
+          speed?: number | null
+          timestamp?: string
+        }
+        Update: {
+          accuracy?: number | null
+          car_id?: string
+          created_at?: string | null
+          heading?: number | null
+          id?: string
+          latitude?: number
+          longitude?: number
+          speed?: number | null
+          timestamp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gps_location_history_car_id_fkey"
             columns: ["car_id"]
             isOneToOne: false
             referencedRelation: "cars"

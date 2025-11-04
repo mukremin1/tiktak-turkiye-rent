@@ -1,0 +1,88 @@
+import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import GPSTracker from "@/components/GPSTracker";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Info } from "lucide-react";
+
+interface Car {
+  id: string;
+  name: string;
+  gps_device_id: string | null;
+}
+
+const GPSTracking = () => {
+  const { user } = useAuth();
+  const [cars, setCars] = useState<Car[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCars = async () => {
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("cars")
+        .select("id, name, gps_device_id")
+        .eq("owner_id", user.id)
+        .not("gps_device_id", "is", null);
+
+      if (!error && data) {
+        setCars(data);
+      }
+      setLoading(false);
+    };
+
+    fetchCars();
+  }, [user]);
+
+  return (
+    <div className="min-h-screen bg-background pb-16 md:pb-0">
+      <Navbar />
+
+      <main className="pt-24 pb-12 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-foreground mb-2">
+              GPS Takip Sistemi
+            </h1>
+            <p className="text-muted-foreground">
+              Araçlarınızın gerçek zamanlı konumunu takip edin
+            </p>
+          </div>
+
+          <Alert className="mb-6">
+            <Info className="w-4 h-4" />
+            <AlertDescription>
+              GPS takip sistemi gerçek zamanlı olarak araç konumlarını gösterir. 
+              GPS cihazı kurulu araçlar listede görünecektir.
+            </AlertDescription>
+          </Alert>
+
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Araçlar yükleniyor...</p>
+            </div>
+          ) : cars.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">
+                GPS cihazı kurulu araç bulunamadı. Araç eklerken GPS Cihaz ID alanını doldurun.
+              </p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-6">
+              {cars.map((car) => (
+                <GPSTracker key={car.id} carId={car.id} carName={car.name} />
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default GPSTracking;

@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, MapPin, Edit, Trash2, Users, Fuel, Settings } from "lucide-react";
+import { Plus, MapPin, Edit, Trash2, Users, Fuel, Settings, Navigation } from "lucide-react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -135,12 +135,20 @@ const MyCars = () => {
                 Kendi araçlarınızı yönetin
               </p>
             </div>
-            <Link to="/add-car">
-              <Button size="lg">
-                <Plus className="w-5 h-5 mr-2" />
-                Araç Ekle
-              </Button>
-            </Link>
+            <div className="flex gap-3">
+              <Link to="/gps-tracking">
+                <Button variant="outline" size="lg">
+                  <Navigation className="w-5 h-5 mr-2" />
+                  GPS Takip
+                </Button>
+              </Link>
+              <Link to="/add-car">
+                <Button size="lg">
+                  <Plus className="w-5 h-5 mr-2" />
+                  Araç Ekle
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {loading ? (

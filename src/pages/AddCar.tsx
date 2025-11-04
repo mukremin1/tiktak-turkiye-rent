@@ -28,8 +28,9 @@ const carSchema = z.object({
   seats: z.number().min(2).max(9),
   location: z.string().min(3, "Lokasyon en az 3 karakter olmalıdır"),
   plateNumber: z.string().optional(),
-  year: z.number().min(2000).max(new Date().getFullYear() + 1).optional(),
+  year: z.number().min(2010, "2010 ve üzeri model yılı araçlar kabul edilmektedir").max(new Date().getFullYear() + 1),
   description: z.string().max(500, "Açıklama en fazla 500 karakter olabilir").optional(),
+  gpsDeviceId: z.string().optional(),
 });
 
 const AddCar = () => {
@@ -55,6 +56,7 @@ const AddCar = () => {
     plateNumber: "",
     year: "",
     description: "",
+    gpsDeviceId: "",
   });
 
   if (!user) {
@@ -85,8 +87,9 @@ const AddCar = () => {
         seats: parseInt(formData.seats),
         location: formData.location,
         plateNumber: formData.plateNumber || undefined,
-        year: formData.year ? parseInt(formData.year) : undefined,
+        year: formData.year ? parseInt(formData.year) : new Date().getFullYear(),
         description: formData.description || undefined,
+        gpsDeviceId: formData.gpsDeviceId || undefined,
       });
 
       setLoading(true);
@@ -108,6 +111,7 @@ const AddCar = () => {
         plate_number: validatedData.plateNumber,
         year: validatedData.year,
         description: validatedData.description,
+        gps_device_id: validatedData.gpsDeviceId,
         available: true,
       });
 
@@ -349,17 +353,30 @@ const AddCar = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="year">Model Yılı</Label>
+                  <Label htmlFor="year">Model Yılı *</Label>
                   <Input
                     id="year"
                     type="number"
-                    min="2000"
+                    min="2010"
                     max={new Date().getFullYear() + 1}
                     value={formData.year}
                     onChange={(e) => setFormData({ ...formData, year: e.target.value })}
                     placeholder="örn: 2022"
+                    required
                   />
+                  <p className="text-sm text-muted-foreground">Minimum 2010 model</p>
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="gpsDeviceId">GPS Cihaz ID</Label>
+                <Input
+                  id="gpsDeviceId"
+                  value={formData.gpsDeviceId}
+                  onChange={(e) => setFormData({ ...formData, gpsDeviceId: e.target.value })}
+                  placeholder="örn: GPS-12345"
+                />
+                <p className="text-sm text-muted-foreground">Araçta kurulan GPS takip cihazının kimlik numarası</p>
               </div>
 
               <div className="space-y-2">
