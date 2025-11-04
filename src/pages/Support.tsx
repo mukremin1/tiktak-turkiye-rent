@@ -5,8 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Bot, User as UserIcon, Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Send, Bot, User as UserIcon, Loader2, MessageSquare, Phone } from "lucide-react";
 import { toast } from "sonner";
+
+const WHATSAPP_NUMBER = "+905395263293";
 
 interface Message {
   role: "user" | "assistant";
@@ -17,11 +20,20 @@ const Support = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Merhaba! RideYo müşteri hizmetlerine hoş geldiniz. Size nasıl yardımcı olabilirim?",
+      content: "Merhaba! TikTak müşteri hizmetlerine hoş geldiniz. Öncelikle yapay zeka asistanım size yardımcı olacak. İsterseniz daha sonra canlı destek ile görüşebilirsiniz. Size nasıl yardımcı olabilirim?",
     },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleWhatsApp = () => {
+    const message = encodeURIComponent("Merhaba, TikTak hakkında bilgi almak istiyorum.");
+    window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}?text=${message}`, '_blank');
+  };
+
+  const handlePhoneCall = () => {
+    window.location.href = `tel:${WHATSAPP_NUMBER}`;
+  };
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
@@ -125,12 +137,36 @@ const Support = () => {
       <main className="pt-24 pb-12 px-4">
         <div className="container mx-auto max-w-4xl">
           <div className="mb-6">
-            <h1 className="text-4xl font-bold text-foreground mb-2">
-              AI Müşteri Hizmetleri
-            </h1>
-            <p className="text-muted-foreground">
-              7/24 yapay zeka destekli destek sistemi
+            <div className="flex items-center justify-between mb-2">
+              <h1 className="text-4xl font-bold text-foreground">
+                Müşteri Hizmetleri
+              </h1>
+              <Badge variant="secondary" className="gap-2">
+                <Bot className="w-4 h-4" />
+                AI Öncelikli
+              </Badge>
+            </div>
+            <p className="text-muted-foreground mb-4">
+              Önce yapay zeka asistanımız size yardımcı olacak, ardından canlı destek ile görüşebilirsiniz
             </p>
+            <div className="flex gap-3">
+              <Button 
+                onClick={handleWhatsApp} 
+                variant="outline" 
+                className="gap-2"
+              >
+                <MessageSquare className="w-4 h-4" />
+                WhatsApp ile İletişim
+              </Button>
+              <Button 
+                onClick={handlePhoneCall} 
+                variant="outline" 
+                className="gap-2"
+              >
+                <Phone className="w-4 h-4" />
+                Telefon: {WHATSAPP_NUMBER}
+              </Button>
+            </div>
           </div>
 
           <Card className="p-4 h-[600px] flex flex-col">

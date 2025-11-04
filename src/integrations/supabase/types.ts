@@ -70,6 +70,45 @@ export type Database = {
           },
         ]
       }
+      campaigns: {
+        Row: {
+          car_types: string[] | null
+          created_at: string | null
+          description: string | null
+          discount_percentage: number
+          end_date: string
+          id: string
+          is_active: boolean | null
+          name: string
+          start_date: string
+          updated_at: string | null
+        }
+        Insert: {
+          car_types?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          discount_percentage: number
+          end_date: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          start_date: string
+          updated_at?: string | null
+        }
+        Update: {
+          car_types?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          discount_percentage?: number
+          end_date?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          start_date?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       cars: {
         Row: {
           available: boolean | null
@@ -202,6 +241,68 @@ export type Database = {
         }
         Relationships: []
       }
+      favorites: {
+        Row: {
+          car_id: string
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          car_id: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          car_id?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          title: string
+          type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          title?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -228,6 +329,44 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      reviews: {
+        Row: {
+          car_id: string
+          comment: string | null
+          created_at: string | null
+          id: string
+          rating: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          car_id: string
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          rating: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          car_id?: string
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          rating?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscriptions: {
         Row: {
@@ -409,7 +548,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "user" | "car_owner"
+      app_role: "user" | "car_owner" | "admin"
       car_type: "compact" | "sedan" | "suv"
       fuel_type: "Benzin" | "Dizel" | "Elektrik" | "Hibrit"
       subscription_tier: "basic" | "premium" | "vip"
@@ -541,7 +680,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["user", "car_owner"],
+      app_role: ["user", "car_owner", "admin"],
       car_type: ["compact", "sedan", "suv"],
       fuel_type: ["Benzin", "Dizel", "Elektrik", "Hibrit"],
       subscription_tier: ["basic", "premium", "vip"],

@@ -1,5 +1,7 @@
-import { Car } from "lucide-react";
+import { Car, MessageSquare } from "lucide-react";
 import { Link } from "react-router-dom";
+
+const WHATSAPP_NUMBER = "+905395263293";
 
 const Footer = () => {
   return (
@@ -30,7 +32,18 @@ const Footer = () => {
             <h3 className="font-semibold text-foreground mb-4">Destek</h3>
             <ul className="space-y-2">
               <li><Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors text-sm">SSS</Link></li>
-              <li><Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors text-sm">İletişim</Link></li>
+              <li><Link to="/support" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Müşteri Hizmetleri</Link></li>
+              <li>
+                <a 
+                  href={`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}?text=${encodeURIComponent("Merhaba, TikTak hakkında bilgi almak istiyorum.")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-foreground transition-colors text-sm flex items-center gap-2"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  WhatsApp Destek
+                </a>
+              </li>
             </ul>
           </div>
 
