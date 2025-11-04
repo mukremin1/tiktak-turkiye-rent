@@ -35,7 +35,7 @@ const CarCard = ({ car }: CarCardProps) => {
       .select("id")
       .eq("user_id", user?.id)
       .eq("car_id", car.id)
-      .single();
+      .maybeSingle();
 
     setIsFavorite(!!data);
   };
@@ -51,7 +51,7 @@ const CarCard = ({ car }: CarCardProps) => {
       .or(`car_types.is.null,car_types.cs.{${car.type}}`)
       .order("discount_percentage", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (data) {
       setCampaign(data);
