@@ -327,7 +327,7 @@ const AddCar = () => {
                     />
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground">TikTak gibi km paketleri ile kullanıcılara paket seçeneği sunun</p>
+                <p className="text-sm text-muted-foreground">KM paketleri ile kullanıcılara paket seçeneği sunun</p>
               </div>
 
               <div className="space-y-2">

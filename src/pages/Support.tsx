@@ -20,14 +20,14 @@ const Support = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Merhaba! TikTak müşteri hizmetlerine hoş geldiniz. Öncelikle yapay zeka asistanım size yardımcı olacak. İsterseniz daha sonra canlı destek ile görüşebilirsiniz. Size nasıl yardımcı olabilirim?",
+      content: "Merhaba! RideYo müşteri hizmetlerine hoş geldiniz. Öncelikle yapay zeka asistanım size yardımcı olacak. İsterseniz daha sonra canlı destek ile görüşebilirsiniz. Size nasıl yardımcı olabilirim?",
     },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleWhatsApp = () => {
-    const message = encodeURIComponent("Merhaba, TikTak hakkında bilgi almak istiyorum.");
+    const message = encodeURIComponent("Merhaba, RideYo hakkında bilgi almak istiyorum.");
     window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}?text=${message}`, '_blank');
   };
 

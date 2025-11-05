@@ -35,7 +35,7 @@ const Footer = () => {
               <li><Link to="/support" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Müşteri Hizmetleri</Link></li>
               <li>
                 <a 
-                  href={`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}?text=${encodeURIComponent("Merhaba, TikTak hakkında bilgi almak istiyorum.")}`}
+                  href={`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}?text=${encodeURIComponent("Merhaba, RideYo hakkında bilgi almak istiyorum.")}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors text-sm flex items-center gap-2"
