@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Slider } from "@/components/ui/slider";
 import { MapPin, Users, Fuel, Settings, Shield, Clock, ArrowLeft, Star, Lock, Unlock, Navigation, Calendar, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,6 +57,7 @@ const CarDetail = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [subscription, setSubscription] = useState<any>(null);
   const [trafficDelayMinutes, setTrafficDelayMinutes] = useState(10);
+  const [rentalDays, setRentalDays] = useState(1);
 
   const handleInsuranceSelect = (packageId: string, price: number) => {
     setSelectedInsurance(packageId);
@@ -261,8 +263,8 @@ const CarDetail = () => {
       endTime.setHours(endTime.getHours() + 1);
       totalPrice = car.price_per_hour;
     } else if (selectedPricing === "day") {
-      endTime.setDate(endTime.getDate() + 1);
-      totalPrice = car.price_per_day;
+      endTime.setDate(endTime.getDate() + rentalDays);
+      totalPrice = car.price_per_day * rentalDays;
     } else if (selectedPricing === "minute") {
       endTime.setMinutes(endTime.getMinutes() + 30);
       totalPrice = car.price_per_minute * 30;
@@ -596,27 +598,50 @@ const CarDetail = () => {
                             <div className="text-xs text-muted-foreground">günlük</div>
                           </div>
                         </div>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">1 Gün</span>
-                            <span className="font-semibold">{car.price_per_day}₺</span>
+                        
+                        <div className="mb-6 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <label className="text-sm font-medium text-foreground">Gün Sayısı</label>
+                            <div className="text-2xl font-bold text-primary">{rentalDays} Gün</div>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">3 Gün</span>
-                            <span className="font-semibold">{(car.price_per_day * 3).toFixed(2)}₺</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">7 Gün</span>
-                            <span className="font-semibold text-primary">{(car.price_per_day * 7).toFixed(2)}₺</span>
-                          </div>
-                          <div className="flex justify-between border-t pt-2">
-                            <span className="text-muted-foreground">1 Ay (30 gün)</span>
-                            <span className="font-bold text-lg text-primary">{(car.price_per_day * 30).toFixed(2)}₺</span>
+                          <Slider
+                            value={[rentalDays]}
+                            onValueChange={(value) => setRentalDays(value[0])}
+                            min={1}
+                            max={30}
+                            step={1}
+                            className="w-full"
+                          />
+                          <div className="flex justify-between text-xs text-muted-foreground">
+                            <span>1 gün</span>
+                            <span>30 gün</span>
                           </div>
                         </div>
+
+                        <div className="bg-background border border-border rounded-lg p-4 mb-4">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <div className="text-sm text-muted-foreground">Toplam Tutar</div>
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {rentalDays} gün × {car.price_per_day}₺
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-2xl font-bold text-primary">
+                                {(car.price_per_day * rentalDays).toFixed(2)}₺
+                              </div>
+                              {subscription && (
+                                <div className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                                  -%{subscription.discount_percentage} indirim uygulanacak
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
                         <Button
                           variant={selectedPricing === "day" ? "default" : "outline"}
-                          className="w-full mt-4"
+                          className="w-full"
                           onClick={() => setSelectedPricing("day")}
                         >
                           {selectedPricing === "day" ? "✓ Seçildi" : "Seç"}
