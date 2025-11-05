@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import Chatbot from "@/components/Chatbot";
 import BottomNav from "@/components/BottomNav";
+import OfflineIndicator from "@/components/OfflineIndicator";
 import Index from "./pages/Index";
 import Cars from "./pages/Cars";
 import CarDetail from "./pages/CarDetail";
@@ -26,6 +27,7 @@ import FAQ from "./pages/FAQ";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import KVKK from "./pages/KVKK";
+import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +37,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <OfflineIndicator />
       <Chatbot />
       <BrowserRouter>
         <AuthProvider>
@@ -59,6 +62,7 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/kvkk" element={<KVKK />} />
+            <Route path="/install" element={<Install />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
