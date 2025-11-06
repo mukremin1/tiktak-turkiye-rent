@@ -51,6 +51,9 @@ const Footer = () => {
               <li><Link to="/privacy" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Gizlilik Politikası</Link></li>
               <li><Link to="/terms" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Kullanım Koşulları</Link></li>
               <li><Link to="/kvkk" className="text-muted-foreground hover:text-foreground transition-colors text-sm">KVKK</Link></li>
+              <li><Link to="/cookie-policy" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Çerez Politikası</Link></li>
+              <li><Link to="/safety-guidelines" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Güvenlik Kuralları</Link></li>
+              <li><Link to="/rental-agreement" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Kiralama Sözleşmesi</Link></li>
             </ul>
           </div>
         </div>
