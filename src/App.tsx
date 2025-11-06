@@ -30,6 +30,7 @@ import KVKK from "./pages/KVKK";
 import CookiePolicy from "./pages/CookiePolicy";
 import SafetyGuidelines from "./pages/SafetyGuidelines";
 import RentalAgreement from "./pages/RentalAgreement";
+import OwnerGuide from "./pages/OwnerGuide";
 import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
@@ -68,6 +69,7 @@ const App = () => (
             <Route path="/cookie-policy" element={<CookiePolicy />} />
             <Route path="/safety-guidelines" element={<SafetyGuidelines />} />
             <Route path="/rental-agreement" element={<RentalAgreement />} />
+            <Route path="/owner-guide" element={<OwnerGuide />} />
             <Route path="/install" element={<Install />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
