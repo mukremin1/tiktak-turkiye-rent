@@ -49,6 +49,7 @@ const Footer = () => {
             <h3 className="font-semibold text-foreground mb-4">Kaynaklar</h3>
             <ul className="space-y-2">
               <li><Link to="/owner-guide" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Araç Sahipleri Rehberi</Link></li>
+              <li><Link to="/earnings-calculator" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Kazanç Hesaplayıcı</Link></li>
               <li><Link to="/safety-guidelines" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Güvenlik Kuralları</Link></li>
               <li><Link to="/rental-agreement" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Kiralama Sözleşmesi</Link></li>
             </ul>

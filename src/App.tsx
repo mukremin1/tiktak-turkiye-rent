@@ -31,6 +31,7 @@ import CookiePolicy from "./pages/CookiePolicy";
 import SafetyGuidelines from "./pages/SafetyGuidelines";
 import RentalAgreement from "./pages/RentalAgreement";
 import OwnerGuide from "./pages/OwnerGuide";
+import EarningsCalculator from "./pages/EarningsCalculator";
 import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
@@ -70,6 +71,7 @@ const App = () => (
             <Route path="/safety-guidelines" element={<SafetyGuidelines />} />
             <Route path="/rental-agreement" element={<RentalAgreement />} />
             <Route path="/owner-guide" element={<OwnerGuide />} />
+            <Route path="/earnings-calculator" element={<EarningsCalculator />} />
             <Route path="/install" element={<Install />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
