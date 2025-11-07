@@ -32,6 +32,9 @@ import SafetyGuidelines from "./pages/SafetyGuidelines";
 import RentalAgreement from "./pages/RentalAgreement";
 import OwnerGuide from "./pages/OwnerGuide";
 import EarningsCalculator from "./pages/EarningsCalculator";
+import CarComparison from "./pages/CarComparison";
+import OwnerDashboard from "./pages/OwnerDashboard";
+import AvailabilityCalendar from "./pages/AvailabilityCalendar";
 import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
@@ -72,6 +75,9 @@ const App = () => (
             <Route path="/rental-agreement" element={<RentalAgreement />} />
             <Route path="/owner-guide" element={<OwnerGuide />} />
             <Route path="/earnings-calculator" element={<EarningsCalculator />} />
+            <Route path="/car-comparison" element={<CarComparison />} />
+            <Route path="/owner-dashboard" element={<OwnerDashboard />} />
+            <Route path="/availability-calendar" element={<AvailabilityCalendar />} />
             <Route path="/install" element={<Install />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
