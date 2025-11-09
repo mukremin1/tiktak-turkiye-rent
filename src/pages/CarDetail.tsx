@@ -58,6 +58,12 @@ const CarDetail = () => {
   const [subscription, setSubscription] = useState<any>(null);
   const [trafficDelayMinutes, setTrafficDelayMinutes] = useState(10);
   const [rentalDays, setRentalDays] = useState(1);
+  const [serviceZones, setServiceZones] = useState<any[]>([]);
+  const [pickupZoneId, setPickupZoneId] = useState<string>("");
+  const [dropoffZoneId, setDropoffZoneId] = useState<string>("");
+  const [pickupAddress, setPickupAddress] = useState("");
+  const [dropoffAddress, setDropoffAddress] = useState("");
+  const DIFFERENT_ZONE_FEE = 50; // 50₺ ek ücret farklı bölgeye bırakma için
 
   const handleInsuranceSelect = (packageId: string, price: number) => {
     setSelectedInsurance(packageId);
@@ -142,10 +148,32 @@ const CarDetail = () => {
 
   useEffect(() => {
     fetchCar();
+    fetchServiceZones();
     if (user) {
       fetchUserSubscription();
     }
   }, [id, user]);
+
+  const fetchServiceZones = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("service_zones")
+        .select("*")
+        .eq("is_active", true)
+        .order("name");
+
+      if (error) throw error;
+      setServiceZones(data || []);
+      
+      // Set default zones to first zone (Merkez)
+      if (data && data.length > 0) {
+        setPickupZoneId(data[0].id);
+        setDropoffZoneId(data[0].id);
+      }
+    } catch (error) {
+      console.error("Hizmet bölgeleri yüklenirken hata:", error);
+    }
+  };
 
   const fetchUserSubscription = async () => {
     try {
@@ -251,6 +279,15 @@ const CarDetail = () => {
       return;
     }
 
+    if (!pickupZoneId || !dropoffZoneId) {
+      toast({
+        title: "Bölge Seçimi Gerekli",
+        description: "Lütfen alış ve bırakış bölgesi seçin",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const startTime = new Date();
     const endTime = new Date();
     let totalPrice = 0;
@@ -270,6 +307,10 @@ const CarDetail = () => {
       totalPrice = car.price_per_minute * 30;
     }
 
+    // Add different zone fee if applicable
+    const differentZoneFee = pickupZoneId !== dropoffZoneId ? DIFFERENT_ZONE_FEE : 0;
+    totalPrice += differentZoneFee;
+
     // Apply subscription discount
     if (subscription) {
       const discount = (totalPrice * subscription.discount_percentage) / 100;
@@ -287,15 +328,23 @@ const CarDetail = () => {
         driver_history_checked: driverVerified,
         driver_risk_level: driverRiskLevel || null,
         traffic_delay_minutes: simulatedTrafficDelay,
+        pickup_zone_id: pickupZoneId,
+        dropoff_zone_id: dropoffZoneId,
+        pickup_address: pickupAddress || null,
+        dropoff_address: dropoffAddress || null,
+        different_zone_fee: pickupZoneId !== dropoffZoneId ? DIFFERENT_ZONE_FEE : 0,
       });
 
       if (bookingError) throw bookingError;
 
+      const pickupZone = serviceZones.find(z => z.id === pickupZoneId);
+      const dropoffZone = serviceZones.find(z => z.id === dropoffZoneId);
       const discountText = subscription ? ` (%${subscription.discount_percentage} abonelik indirimi uygulandı)` : '';
       const trafficText = simulatedTrafficDelay > 0 ? ` Trafik gecikmesi: +${simulatedTrafficDelay} dakika ücretsiz eklendi.` : '';
+      const zoneText = pickupZoneId !== dropoffZoneId ? ` Farklı bölgeye teslim: +${DIFFERENT_ZONE_FEE}₺` : '';
       toast({
         title: "Rezervasyon Başarılı!",
-        description: `${car.name} için rezervasyonunuz oluşturuldu.${discountText}${trafficText}`,
+        description: `${car.name} için rezervasyonunuz oluşturuldu. Alış: ${pickupZone?.name}, Bırakış: ${dropoffZone?.name}.${discountText}${trafficText}${zoneText}`,
       });
       navigate("/");
     } catch (error: any) {
@@ -700,6 +749,73 @@ const CarDetail = () => {
                       )}
                     </TabsContent>
                   </Tabs>
+                </div>
+
+                <div className="border-t border-border pt-6 mb-6">
+                  <h3 className="font-semibold text-foreground mb-4 text-lg flex items-center gap-2">
+                    <MapPin className="w-5 h-5" />
+                    Alış ve Bırakış Noktası
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-2 block">
+                        Alış Bölgesi
+                      </label>
+                      <select
+                        value={pickupZoneId}
+                        onChange={(e) => setPickupZoneId(e.target.value)}
+                        className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      >
+                        <option value="">Bölge seçin</option>
+                        {serviceZones.map((zone) => (
+                          <option key={zone.id} value={zone.id}>
+                            {zone.name} - {zone.description}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        type="text"
+                        placeholder="Detaylı adres (opsiyonel)"
+                        value={pickupAddress}
+                        onChange={(e) => setPickupAddress(e.target.value)}
+                        className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary mt-2 text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-2 block">
+                        Bırakış Bölgesi
+                      </label>
+                      <select
+                        value={dropoffZoneId}
+                        onChange={(e) => setDropoffZoneId(e.target.value)}
+                        className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      >
+                        <option value="">Bölge seçin</option>
+                        {serviceZones.map((zone) => (
+                          <option key={zone.id} value={zone.id}>
+                            {zone.name} - {zone.description}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        type="text"
+                        placeholder="Detaylı adres (opsiyonel)"
+                        value={dropoffAddress}
+                        onChange={(e) => setDropoffAddress(e.target.value)}
+                        className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary mt-2 text-sm"
+                      />
+                    </div>
+
+                    {pickupZoneId && dropoffZoneId && pickupZoneId !== dropoffZoneId && (
+                      <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
+                        <p className="text-sm font-medium text-amber-700 dark:text-amber-300">
+                          ℹ️ Farklı bölgeye teslim ücreti: +{DIFFERENT_ZONE_FEE}₺
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <InsurancePackages 

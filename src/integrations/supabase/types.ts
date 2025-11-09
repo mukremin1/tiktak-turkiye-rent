@@ -18,11 +18,16 @@ export type Database = {
         Row: {
           car_id: string
           created_at: string | null
+          different_zone_fee: number | null
           driver_history_checked: boolean | null
           driver_risk_level: string | null
+          dropoff_address: string | null
+          dropoff_zone_id: string | null
           end_time: string
           id: string
           payment_status: string | null
+          pickup_address: string | null
+          pickup_zone_id: string | null
           rental_type: string
           start_time: string
           total_price: number
@@ -33,11 +38,16 @@ export type Database = {
         Insert: {
           car_id: string
           created_at?: string | null
+          different_zone_fee?: number | null
           driver_history_checked?: boolean | null
           driver_risk_level?: string | null
+          dropoff_address?: string | null
+          dropoff_zone_id?: string | null
           end_time: string
           id?: string
           payment_status?: string | null
+          pickup_address?: string | null
+          pickup_zone_id?: string | null
           rental_type: string
           start_time: string
           total_price: number
@@ -48,11 +58,16 @@ export type Database = {
         Update: {
           car_id?: string
           created_at?: string | null
+          different_zone_fee?: number | null
           driver_history_checked?: boolean | null
           driver_risk_level?: string | null
+          dropoff_address?: string | null
+          dropoff_zone_id?: string | null
           end_time?: string
           id?: string
           payment_status?: string | null
+          pickup_address?: string | null
+          pickup_zone_id?: string | null
           rental_type?: string
           start_time?: string
           total_price?: number
@@ -66,6 +81,20 @@ export type Database = {
             columns: ["car_id"]
             isOneToOne: false
             referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_dropoff_zone_id_fkey"
+            columns: ["dropoff_zone_id"]
+            isOneToOne: false
+            referencedRelation: "service_zones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_pickup_zone_id_fkey"
+            columns: ["pickup_zone_id"]
+            isOneToOne: false
+            referencedRelation: "service_zones"
             referencedColumns: ["id"]
           },
         ]
@@ -426,6 +455,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      service_zones: {
+        Row: {
+          boundaries: Json
+          city: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          boundaries: Json
+          city?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          boundaries?: Json
+          city?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       subscriptions: {
         Row: {
