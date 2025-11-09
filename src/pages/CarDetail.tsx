@@ -63,7 +63,6 @@ const CarDetail = () => {
   const [dropoffZoneId, setDropoffZoneId] = useState<string>("");
   const [pickupAddress, setPickupAddress] = useState("");
   const [dropoffAddress, setDropoffAddress] = useState("");
-  const DIFFERENT_ZONE_FEE = 50; // 50₺ ek ücret farklı bölgeye bırakma için
 
   const handleInsuranceSelect = (packageId: string, price: number) => {
     setSelectedInsurance(packageId);
@@ -307,10 +306,6 @@ const CarDetail = () => {
       totalPrice = car.price_per_minute * 30;
     }
 
-    // Add different zone fee if applicable
-    const differentZoneFee = pickupZoneId !== dropoffZoneId ? DIFFERENT_ZONE_FEE : 0;
-    totalPrice += differentZoneFee;
-
     // Apply subscription discount
     if (subscription) {
       const discount = (totalPrice * subscription.discount_percentage) / 100;
@@ -332,7 +327,7 @@ const CarDetail = () => {
         dropoff_zone_id: dropoffZoneId,
         pickup_address: pickupAddress || null,
         dropoff_address: dropoffAddress || null,
-        different_zone_fee: pickupZoneId !== dropoffZoneId ? DIFFERENT_ZONE_FEE : 0,
+        different_zone_fee: 0,
       });
 
       if (bookingError) throw bookingError;
@@ -341,10 +336,9 @@ const CarDetail = () => {
       const dropoffZone = serviceZones.find(z => z.id === dropoffZoneId);
       const discountText = subscription ? ` (%${subscription.discount_percentage} abonelik indirimi uygulandı)` : '';
       const trafficText = simulatedTrafficDelay > 0 ? ` Trafik gecikmesi: +${simulatedTrafficDelay} dakika ücretsiz eklendi.` : '';
-      const zoneText = pickupZoneId !== dropoffZoneId ? ` Farklı bölgeye teslim: +${DIFFERENT_ZONE_FEE}₺` : '';
       toast({
         title: "Rezervasyon Başarılı!",
-        description: `${car.name} için rezervasyonunuz oluşturuldu. Alış: ${pickupZone?.name}, Bırakış: ${dropoffZone?.name}.${discountText}${trafficText}${zoneText}`,
+        description: `${car.name} için rezervasyonunuz oluşturuldu. Alış: ${pickupZone?.name}, Bırakış: ${dropoffZone?.name}.${discountText}${trafficText}`,
       });
       navigate("/");
     } catch (error: any) {
@@ -808,13 +802,6 @@ const CarDetail = () => {
                       />
                     </div>
 
-                    {pickupZoneId && dropoffZoneId && pickupZoneId !== dropoffZoneId && (
-                      <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
-                        <p className="text-sm font-medium text-amber-700 dark:text-amber-300">
-                          ℹ️ Farklı bölgeye teslim ücreti: +{DIFFERENT_ZONE_FEE}₺
-                        </p>
-                      </div>
-                    )}
                   </div>
                 </div>
 

@@ -10,7 +10,7 @@ export const useCamera = () => {
   const [isCapturing, setIsCapturing] = useState(false);
   const { toast } = useToast();
 
-  const capturePhoto = async (): Promise<CameraPhoto | null> => {
+  const capturePhoto = async (enableFlash: boolean = false): Promise<CameraPhoto | null> => {
     setIsCapturing(true);
 
     try {
@@ -27,6 +27,8 @@ export const useCamera = () => {
           allowEditing: false,
           resultType: CameraResultType.DataUrl,
           source: CameraSource.Camera,
+          // @ts-ignore - Flash is available but not in types
+          flash: enableFlash ? 'on' : 'auto',
         });
 
         return {

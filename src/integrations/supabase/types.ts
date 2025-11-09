@@ -643,6 +643,60 @@ export type Database = {
           },
         ]
       }
+      vehicle_photos: {
+        Row: {
+          booking_id: string
+          car_id: string
+          created_at: string | null
+          flash_used: boolean | null
+          id: string
+          is_dark_environment: boolean | null
+          notes: string | null
+          photo_type: string
+          photo_url: string
+          user_id: string
+        }
+        Insert: {
+          booking_id: string
+          car_id: string
+          created_at?: string | null
+          flash_used?: boolean | null
+          id?: string
+          is_dark_environment?: boolean | null
+          notes?: string | null
+          photo_type: string
+          photo_url: string
+          user_id: string
+        }
+        Update: {
+          booking_id?: string
+          car_id?: string
+          created_at?: string | null
+          flash_used?: boolean | null
+          id?: string
+          is_dark_environment?: boolean | null
+          notes?: string | null
+          photo_type?: string
+          photo_url?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_photos_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vehicle_photos_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
