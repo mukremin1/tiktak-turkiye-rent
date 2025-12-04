@@ -8,17 +8,23 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { Check, Crown, Star, Zap } from "lucide-react";
+import { Check, Crown, Star, Zap, Clock, MapPin } from "lucide-react";
 
 interface SubscriptionPlan {
   tier: 'basic' | 'premium' | 'vip';
   name: string;
   price: number;
   discount: number;
+  kmPrice: number;
+  halfHourPrice: number;
   features: string[];
   icon: React.ReactNode;
   color: string;
 }
+
+const NORMAL_KM_PRICE = 18; // Normal km ücreti
+const SUBSCRIPTION_KM_PRICE = 15; // Abonelik km ücreti
+const HALF_HOUR_BASE_PRICE = 300; // Yarım saat başlangıç ücreti
 
 const plans: SubscriptionPlan[] = [
   {
@@ -26,8 +32,12 @@ const plans: SubscriptionPlan[] = [
     name: 'Temel',
     price: 99,
     discount: 5,
+    kmPrice: SUBSCRIPTION_KM_PRICE,
+    halfHourPrice: HALF_HOUR_BASE_PRICE,
     features: [
       '%5 indirim tüm kiralamalarınızda',
+      `KM ücreti ${NORMAL_KM_PRICE}₺ yerine ${SUBSCRIPTION_KM_PRICE}₺`,
+      `Yarım saat ${HALF_HOUR_BASE_PRICE}₺'den başlar`,
       'Standart müşteri desteği',
       'Aylık kullanım raporları',
       'Temel sigorta paketi',
@@ -41,8 +51,12 @@ const plans: SubscriptionPlan[] = [
     name: 'Premium',
     price: 199,
     discount: 15,
+    kmPrice: SUBSCRIPTION_KM_PRICE,
+    halfHourPrice: HALF_HOUR_BASE_PRICE - 25,
     features: [
       '%15 indirim tüm kiralamalarınızda',
+      `KM ücreti ${NORMAL_KM_PRICE}₺ yerine ${SUBSCRIPTION_KM_PRICE}₺`,
+      `Yarım saat ${HALF_HOUR_BASE_PRICE - 25}₺'den başlar`,
       'Öncelikli müşteri desteği',
       'Haftalık detaylı raporlar',
       'Gelişmiş sigorta paketi',
@@ -58,8 +72,12 @@ const plans: SubscriptionPlan[] = [
     name: 'VIP',
     price: 299,
     discount: 25,
+    kmPrice: SUBSCRIPTION_KM_PRICE - 2,
+    halfHourPrice: HALF_HOUR_BASE_PRICE - 50,
     features: [
       '%25 indirim tüm kiralamalarınızda',
+      `KM ücreti ${NORMAL_KM_PRICE}₺ yerine ${SUBSCRIPTION_KM_PRICE - 2}₺`,
+      `Yarım saat ${HALF_HOUR_BASE_PRICE - 50}₺'den başlar`,
       '7/24 özel VIP destek',
       'Günlük detaylı kullanım raporları',
       'Premium sigorta paketi',
@@ -145,7 +163,20 @@ export default function Subscription() {
               Size uygun aylık paketi seçin ve tüm kiralamalarınızda büyük indirimlerden yararlanın. 
               Dakikalık, saatlik ve günlük tüm kiralama seçeneklerinde geçerlidir.
             </p>
-            <div className="mt-4 inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
+            
+            {/* Pricing Info */}
+            <div className="mt-6 flex flex-wrap justify-center gap-4">
+              <div className="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                Normal KM: {NORMAL_KM_PRICE}₺ → Abonelik: {SUBSCRIPTION_KM_PRICE}₺
+              </div>
+              <div className="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
+                <Clock className="h-4 w-4" />
+                Yarım Saat: {HALF_HOUR_BASE_PRICE}₺'den başlar
+              </div>
+            </div>
+            
+            <div className="mt-4 inline-flex items-center gap-2 bg-muted text-muted-foreground px-4 py-2 rounded-full text-sm font-medium">
               <Zap className="h-4 w-4" />
               Tüm paketler aylık otomatik yenilenir
             </div>
@@ -175,6 +206,11 @@ export default function Subscription() {
               
               return (
                 <Card key={plan.tier} className={`relative ${isActive ? 'border-primary shadow-lg' : ''}`}>
+                  {plan.tier === 'premium' && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <Badge className="bg-purple-500 hover:bg-purple-500">En Popüler</Badge>
+                    </div>
+                  )}
                   <CardHeader>
                     <div className={`${plan.color} w-12 h-12 rounded-lg flex items-center justify-center text-white mb-4`}>
                       {plan.icon}
@@ -186,6 +222,16 @@ export default function Subscription() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
+                    <div className="mb-4 p-3 bg-muted rounded-lg">
+                      <div className="flex justify-between text-sm mb-1">
+                        <span>KM Ücreti:</span>
+                        <span className="font-semibold">{plan.kmPrice}₺</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Yarım Saat:</span>
+                        <span className="font-semibold">{plan.halfHourPrice}₺</span>
+                      </div>
+                    </div>
                     <ul className="space-y-3">
                       {plan.features.map((feature, idx) => (
                         <li key={idx} className="flex items-start gap-2">
