@@ -278,6 +278,15 @@ const CarDetail = () => {
       return;
     }
 
+    if (!selectedInsurance) {
+      toast({
+        title: "Sigorta Seçimi Zorunlu",
+        description: "Kiralama işlemine devam edebilmek için bir sigorta paketi seçmelisiniz",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!pickupZoneId || !dropoffZoneId) {
       toast({
         title: "Bölge Seçimi Gerekli",
@@ -306,13 +315,24 @@ const CarDetail = () => {
       totalPrice = car.price_per_minute * 30;
     }
 
-    // Apply subscription discount
+    // Add insurance price to total
+    totalPrice += insurancePrice;
+
+    // Apply subscription discount (only on rental, not insurance)
     if (subscription) {
-      const discount = (totalPrice * subscription.discount_percentage) / 100;
+      const rentalPrice = totalPrice - insurancePrice;
+      const discount = (rentalPrice * subscription.discount_percentage) / 100;
       totalPrice = totalPrice - discount;
     }
 
     try {
+      // Get car owner ID for notification
+      const { data: carData } = await supabase
+        .from("cars")
+        .select("owner_id, name")
+        .eq("id", car.id)
+        .single();
+
       const { error: bookingError } = await supabase.from("bookings").insert({
         car_id: car.id,
         user_id: user.id,
@@ -332,13 +352,31 @@ const CarDetail = () => {
 
       if (bookingError) throw bookingError;
 
+      // Send notification to car owner
+      if (carData?.owner_id) {
+        try {
+          await supabase.functions.invoke('send-notification', {
+            body: {
+              userId: carData.owner_id,
+              title: "Yeni Kiralama Talebi!",
+              message: `${car.name} aracınız için yeni bir kiralama talebi alındı. Toplam: ${totalPrice.toFixed(2)}₺`,
+              type: "booking"
+            }
+          });
+        } catch (notifError) {
+          console.error("Bildirim gönderme hatası:", notifError);
+          // Don't fail the booking if notification fails
+        }
+      }
+
       const pickupZone = serviceZones.find(z => z.id === pickupZoneId);
       const dropoffZone = serviceZones.find(z => z.id === dropoffZoneId);
       const discountText = subscription ? ` (%${subscription.discount_percentage} abonelik indirimi uygulandı)` : '';
       const trafficText = simulatedTrafficDelay > 0 ? ` Trafik gecikmesi: +${simulatedTrafficDelay} dakika ücretsiz eklendi.` : '';
+      const insuranceText = ` Sigorta: ${insurancePrice}₺`;
       toast({
         title: "Rezervasyon Başarılı!",
-        description: `${car.name} için rezervasyonunuz oluşturuldu. Alış: ${pickupZone?.name}, Bırakış: ${dropoffZone?.name}.${discountText}${trafficText}`,
+        description: `${car.name} için rezervasyonunuz oluşturuldu. Alış: ${pickupZone?.name}, Bırakış: ${dropoffZone?.name}.${insuranceText}${discountText}${trafficText}`,
       });
       navigate("/");
     } catch (error: any) {
@@ -819,13 +857,64 @@ const CarDetail = () => {
                   </div>
                 )}
 
-                <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-6 mt-6">
+                {/* Order Summary */}
+                {selectedPricing && (
+                  <div className="bg-muted/50 border border-border rounded-xl p-4 mb-6 mt-6">
+                    <h4 className="font-semibold text-foreground mb-3">Sipariş Özeti</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Kiralama ({selectedPricing === 'minute' ? '30 dk' : selectedPricing === 'hour' ? '1 saat' : `${rentalDays} gün`})</span>
+                        <span className="font-medium">
+                          {selectedPricing === 'minute' 
+                            ? (car.price_per_minute * 30).toFixed(2) 
+                            : selectedPricing === 'hour' 
+                            ? car.price_per_hour 
+                            : (car.price_per_day * rentalDays).toFixed(2)}₺
+                        </span>
+                      </div>
+                      {selectedInsurance && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Sigorta Paketi</span>
+                          <span className="font-medium">{insurancePrice}₺</span>
+                        </div>
+                      )}
+                      {subscription && (
+                        <div className="flex justify-between text-primary">
+                          <span>Abonelik İndirimi (%{subscription.discount_percentage})</span>
+                          <span>-{((selectedPricing === 'minute' 
+                            ? car.price_per_minute * 30 
+                            : selectedPricing === 'hour' 
+                            ? car.price_per_hour 
+                            : car.price_per_day * rentalDays) * subscription.discount_percentage / 100).toFixed(2)}₺</span>
+                        </div>
+                      )}
+                      <div className="border-t border-border pt-2 mt-2 flex justify-between text-lg font-bold">
+                        <span>Toplam</span>
+                        <span className="text-primary">
+                          {(() => {
+                            let rental = selectedPricing === 'minute' 
+                              ? car.price_per_minute * 30 
+                              : selectedPricing === 'hour' 
+                              ? car.price_per_hour 
+                              : car.price_per_day * rentalDays;
+                            if (subscription) {
+                              rental = rental - (rental * subscription.discount_percentage / 100);
+                            }
+                            return (rental + (selectedInsurance ? insurancePrice : 0)).toFixed(2);
+                          })()}₺
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-6">
                   <div className="flex items-center gap-2 text-primary mb-2">
                     <Shield className="w-5 h-5" />
                     <span className="font-semibold">Güvenli Kiralama</span>
                   </div>
                   <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• Tam kasko sigorta dahil</li>
+                    <li>• Seçtiğiniz sigorta paketi dahil</li>
                     <li>• Yakıt bizden (ücretsiz)</li>
                     <li>• 7/24 yol yardım hizmeti</li>
                     <li>• Ücretsiz iptal (15 dk önce)</li>
@@ -835,13 +924,17 @@ const CarDetail = () => {
                 <Button 
                   size="lg"
                   className="w-full text-lg h-14"
-                  disabled={!car.available || !driverVerified}
+                  disabled={!car.available || !driverVerified || !selectedInsurance || !selectedPricing}
                   onClick={handleReserve}
                 >
                   {!car.available 
                     ? "Müsait Değil" 
                     : !driverVerified 
-                    ? "Önce Sürücü Doğrulaması Yapın" 
+                    ? "Önce Sürücü Doğrulaması Yapın"
+                    : !selectedPricing
+                    ? "Kiralama Türü Seçin"
+                    : !selectedInsurance 
+                    ? "Sigorta Paketi Seçin" 
                     : "Hemen Kirala"}
                 </Button>
               </div>
