@@ -21,10 +21,8 @@ const Footer = () => {
             <div className="space-y-2">
               <p className="text-sm font-medium text-foreground">Mobil Uygulama</p>
               <div className="flex flex-col gap-2">
-                <a 
-                  href="https://apps.apple.com/app/rideyo" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+                <Link 
+                  to="/install"
                   className="flex items-center gap-2 bg-foreground text-background px-3 py-2 rounded-lg hover:opacity-90 transition-opacity w-fit"
                 >
                   <Apple className="w-4 h-4" />
@@ -32,11 +30,9 @@ const Footer = () => {
                     <div className="text-[9px] leading-tight">İndir</div>
                     <div className="text-xs font-semibold leading-tight">App Store</div>
                   </div>
-                </a>
-                <a 
-                  href="https://play.google.com/store/apps/details?id=com.rideyo" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+                </Link>
+                <Link 
+                  to="/install"
                   className="flex items-center gap-2 bg-foreground text-background px-3 py-2 rounded-lg hover:opacity-90 transition-opacity w-fit"
                 >
                   <Smartphone className="w-4 h-4" />
@@ -44,7 +40,7 @@ const Footer = () => {
                     <div className="text-[9px] leading-tight">İndir</div>
                     <div className="text-xs font-semibold leading-tight">Google Play</div>
                   </div>
-                </a>
+                </Link>
               </div>
             </div>
           </div>
