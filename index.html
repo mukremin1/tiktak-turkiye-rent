@@ -7,6 +7,7 @@
     <meta name="description" content="RideYo ile dakikalar içinde araç kiralayın. Dakikalık, saatlik ve günlük kiralama seçenekleri. GPS takip, 2010+ model araçlar, yakıt dahil. Hemen başlayın!" />
     <meta name="keywords" content="araç kiralama, car rental, dakikalık kiralama, saatlik kiralama, günlük kiralama, RideYo, online araç kiralama" />
     <meta name="author" content="RideYo" />
+    <link rel="canonical" href="https://ride-yo.com" />
     
     <!-- PWA Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes" />
@@ -16,20 +17,34 @@
     <meta name="theme-color" content="#8B5CF6" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icon-512x512.png" />
+    <link rel="icon" type="image/png" href="/icon-512x512.png" />
 
     <meta property="og:title" content="RideYo - Dakikalar İçinde Araç Kirala" />
     <meta property="og:description" content="RideYo ile dakikalar içinde araç kiralayın. Dakikalık, saatlik ve günlük kiralama seçenekleri. GPS takip, 2010+ model araçlar, yakıt dahil!" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://rideyo.app" />
-    <meta property="og:image" content="/logo-512x512.png" />
+    <meta property="og:url" content="https://ride-yo.com" />
+    <meta property="og:image" content="https://ride-yo.com/logo-512x512.png" />
     <meta property="og:locale" content="tr_TR" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:site_name" content="RideYo" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="RideYo - Dakikalar İçinde Araç Kirala" />
     <meta name="twitter:description" content="Dakikalar içinde araç kiralayın. GPS takip, 2010+ model araçlar, yakıt dahil!" />
-    <meta name="twitter:image" content="/logo-512x512.png" />
+    <meta name="twitter:image" content="https://ride-yo.com/logo-512x512.png" />
+    
+    <!-- GitHub Pages SPA Redirect -->
+    <script type="text/javascript">
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) { 
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+              l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
     
     <!-- Structured Data for SEO -->
     <script type="application/ld+json">
@@ -37,7 +52,7 @@
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
       "name": "RideYo",
-      "image": "/logo-512x512.png",
+      "image": "https://ride-yo.com/logo-512x512.png",
       "description": "Türkiye'nin en hızlı araç kiralama platformu",
       "address": {
         "@type": "PostalAddress",
@@ -48,7 +63,7 @@
         "latitude": 41.0082,
         "longitude": 28.9784
       },
-      "url": "https://rideyo.app",
+      "url": "https://ride-yo.com",
       "telephone": "+905395263293",
       "priceRange": "₺₺",
       "openingHoursSpecification": {

@@ -1,16 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
   <head>
     <meta charset="utf-8">
-    <title>RideYo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RideYo - Yönlendiriliyor...</title>
     <script type="text/javascript">
-      // Single Page Apps for GitHub Pages
-      // MIT License
-      // This script takes the current url and converts the path and query
-      // string into just a query string, and then redirects the browser
-      // to the new url with only a query string and hash fragment
+      // GitHub Pages SPA redirect
       var pathSegmentsToKeep = 0;
-
       var l = window.location;
       l.replace(
         l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
@@ -20,7 +16,38 @@
         l.hash
       );
     </script>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+        color: white;
+      }
+      .loader {
+        text-align: center;
+      }
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(255,255,255,0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
   </head>
   <body>
+    <div class="loader">
+      <div class="spinner"></div>
+      <p>Yönlendiriliyor...</p>
+    </div>
   </body>
 </html>
