@@ -32,10 +32,11 @@ jobs:
           CI: false
 
       - name: Upload artifact for GitHub Pages
-        uses: actions/upload-pages-artifact@v1
+        # v3 gerekli (v2 veya v1 eski/uyumsuz olabilir)
+        uses: actions/upload-pages-artifact@v3
         with:
           # Vite varsayılanı dist olduğundan ./dist kullanıyoruz. Eğer senin projede farklıysa burayı değiştir.
           path: ./dist
 
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
