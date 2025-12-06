@@ -6,7 +6,7 @@ import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: "/",
+  base: "./",
   server: {
     host: "::",
     port: 8080,
@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "robots.txt", "icon-512x512.png"],
+      includeAssets: ["favicon.ico", "robots.txt", "icon-512x512.png", "manifest.webmanifest"],
       manifest: {
         name: "RideYo - Araç Kiralama",
         short_name: "RideYo",

@@ -43,6 +43,9 @@ jobs:
       - name: Copy 404.html for SPA routing
         run: cp dist/index.html dist/404.html
 
+      - name: Copy manifest to dist
+        run: cp public/manifest.webmanifest dist/manifest.webmanifest
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
