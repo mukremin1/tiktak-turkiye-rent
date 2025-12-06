@@ -5,28 +5,31 @@ import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  base: mode === "development" ? "/" : "/tiktak-turkiye-rent/",
-  server: {
-    host: "::",
-    port: 8080,
-  },
-  plugins: [
-    react(),
-    mode === "development" && componentTagger(),
-    VitePWA({
-      registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "robots.txt", "icon-512x512.png"],
-      manifest: {
-        name: "RideYo - Araç Kiralama",
-        short_name: "RideYo",
-        description: "Türkiye'nin en hızlı araç kiralama platformu",
-        theme_color: "#8B5CF6",
-        background_color: "#ffffff",
-        display: "standalone",
-        orientation: "portrait",
-        start_url: "/",
-        scope: "/",
+export default defineConfig(({ mode }) => {
+  const base = mode === "development" ? "/" : "/tiktak-turkiye-rent/";
+  
+  return {
+    base,
+    server: {
+      host: "::",
+      port: 8080,
+    },
+    plugins: [
+      react(),
+      mode === "development" && componentTagger(),
+      VitePWA({
+        registerType: "autoUpdate",
+        includeAssets: ["favicon.ico", "robots.txt", "icon-512x512.png"],
+        manifest: {
+          name: "RideYo - Araç Kiralama",
+          short_name: "RideYo",
+          description: "Türkiye'nin en hızlı araç kiralama platformu",
+          theme_color: "#8B5CF6",
+          background_color: "#ffffff",
+          display: "standalone",
+          orientation: "portrait",
+          start_url: base,
+          scope: base,
         icons: [
           {
             src: "icon-512x512.png",
@@ -65,4 +68,5 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-}));
+};
+});
