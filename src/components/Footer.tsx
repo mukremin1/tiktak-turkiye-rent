@@ -110,6 +110,12 @@ const Footer = () => {
           <div className="flex flex-wrap items-center justify-center gap-4">
             <span className="text-sm text-muted-foreground">Güvenli Ödeme:</span>
             <div className="flex items-center gap-3">
+              {/* iyzico */}
+              <div className="bg-gradient-to-r from-[#1a1f71] to-[#4a4fb5] rounded px-4 py-2 border border-border">
+                <svg viewBox="0 0 80 24" className="h-5 w-auto">
+                  <text x="50%" y="50%" fill="white" fontSize="14" fontWeight="bold" textAnchor="middle" dominantBaseline="middle" fontFamily="Arial, sans-serif">iyzico</text>
+                </svg>
+              </div>
               {/* Visa */}
               <div className="bg-white rounded px-3 py-1.5 border border-border">
                 <svg viewBox="0 0 48 16" className="h-6 w-auto">
@@ -133,6 +139,9 @@ const Footer = () => {
               </div>
             </div>
           </div>
+          <p className="text-xs text-muted-foreground text-center mt-3">
+            Ödemeleriniz iyzico güvencesiyle korunmaktadır.
+          </p>
         </div>
 
         <div className="border-t border-border pt-8 text-center text-sm text-muted-foreground">
