@@ -1,24 +1,30 @@
 ﻿import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
 
-// https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  // development'da kök (/) kalsın; production (build) için GitHub Pages alt dizininizi kullanın
-  base: mode === "development" ? "/" : "/tiktak-turkiye-rent/",
-  server: {
-    host: "::",
-    port: 8080,
-  },
-  build: {
-    outDir: "dist",
-    sourcemap: false,
-  },
-  plugins: [
+export default defineConfig(async ({ mode }) => {
+  let componentTaggerPlugin: any = undefined;
+
+  if (mode === "development") {
+    try {
+      const mod = await import("lovable-tagger");
+      const tagger =
+        mod.componentTagger ??
+        (mod.default && (mod.default.componentTagger ?? mod.default)) ??
+        undefined;
+
+      if (typeof tagger === "function") {
+        componentTaggerPlugin = tagger();
+      }
+    } catch (err) {
+      componentTaggerPlugin = undefined;
+    }
+  }
+
+  const plugins = [
     react(),
-    mode === "development" && componentTagger(),
+    componentTaggerPlugin,
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "robots.txt", "icon-512x512.png", "manifest.webmanifest"],
@@ -57,17 +63,36 @@ export default defineConfig(({ mode }) => ({
               cacheName: "supabase-cache",
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24, // 24 saat
+                maxAgeSeconds: 60 * 60 * 24,
               },
             },
           },
         ],
       },
     }),
-  ].filter(Boolean),
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
+  ].filter(Boolean);
+
+  return {
+    base: mode === "development" ? "/" : "/tiktak-turkiye-rent/",
+    server: {
+      host: "::",
+      port: 8080,
     },
-  },
-}));
+    build: {
+      outDir: "dist",
+      sourcemap: false,
+    },
+    plugins,
+    optimizeDeps: {
+      exclude: ["lovable-tagger"],
+    },
+    ssr: {
+      noExternal: ["lovable-tagger"],
+    },
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
+    },
+  };
+});
