@@ -10,7 +10,7 @@
     "deploy": "gh-pages -d dist",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
     "install": "npm ci --legacy-peer-deps"
   },
   "dependencies": {
