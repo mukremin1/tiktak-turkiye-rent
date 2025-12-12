@@ -1,4 +1,4 @@
-﻿import { defineConfig } from "vite";
+import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
@@ -6,8 +6,8 @@ import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  // development'da kök (/) kalsın; production (build) için GitHub Pages alt dizininizi kullanın
-  base: mode === "development" ? "/" : "/tiktak-turkiye-rent/",
+  // Vercel üzerinde deploy yapılıyorsa root; lokal development için de '/'
+  base: process.env.VERCEL ? '/' : (mode === "development" ? "/" : "/tiktak-turkiye-rent/"),
   server: {
     host: "::",
     port: 8080,
