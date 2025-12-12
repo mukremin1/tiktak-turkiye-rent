@@ -133,9 +133,9 @@ const SafetyGuidelines = () => {
               <div className="bg-primary/10 p-6 rounded-lg border border-primary/20">
                 <h3 className="text-xl font-semibold text-foreground mb-3">7/24 Destek Hatları</h3>
                 <div className="space-y-2">
-                  <p><strong className="text-foreground">Acil Destek:</strong> +90 (462) 111 11 11</p>
-                  <p><strong className="text-foreground">Yol Yardım:</strong> +90 (462) 222 22 22</p>
-                  <p><strong className="text-foreground">WhatsApp:</strong> +90 (462) 333 33 33</p>
+                  <p><strong className="text-foreground">Acil Destek:</strong> +90 5395263293</p>
+                  <p><strong className="text-foreground">Yol Yardım:</strong> +90 5395263293</p>
+                  <p><strong className="text-foreground">WhatsApp:</strong> +90 5395263293</p>
                 </div>
               </div>
             </div>
